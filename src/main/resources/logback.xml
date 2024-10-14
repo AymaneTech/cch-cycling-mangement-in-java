@@ -1,0 +1,36 @@
+<configuration>
+    <!-- Appender for database and Hibernate logs -->
+    <appender name="DB_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/database.log</file>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender for application-specific logs -->
+    <appender name="APP_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/application.log</file>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logger for Hibernate and database -->
+    <logger name="org.hibernate" level="INFO" additivity="false">
+        <appender-ref ref="DB_FILE" />
+    </logger>
+    <logger name="com.zaxxer.hikari" level="INFO" additivity="false">
+        <appender-ref ref="DB_FILE" />
+    </logger>
+    <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+        <appender-ref ref="DB_FILE" />
+    </logger>
+    <logger name="org.hibernate.type.descriptor.sql" level="TRACE" additivity="false">
+        <appender-ref ref="DB_FILE" />
+    </logger>
+
+    <!-- Root logger for application logs -->
+    <root level="INFO">
+        <appender-ref ref="APP_FILE" />
+    </root>
+</configuration>
