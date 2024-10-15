@@ -4,14 +4,12 @@ import com.wora.comptetition.domain.valueObject.StageId;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.concurrent.CompletionException;
 
 @Entity
 @Table(name = "stages")
@@ -19,7 +17,6 @@ import java.util.concurrent.CompletionException;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Stage {
 
     @EmbeddedId

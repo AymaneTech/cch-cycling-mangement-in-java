@@ -18,7 +18,6 @@ import java.time.Duration;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class StageResult {
 
     @EmbeddedId
