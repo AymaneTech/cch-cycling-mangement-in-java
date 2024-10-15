@@ -2,6 +2,7 @@ package com.wora.rider.application.service.impl;
 
 import com.wora.rider.application.dto.response.TeamResponseDto;
 import com.wora.rider.domain.entity.Team;
+import com.wora.rider.domain.exception.TeamNotFoundException;
 import com.wora.rider.domain.repository.TeamRepository;
 import com.wora.rider.domain.valueObject.TeamId;
 import org.junit.jupiter.api.DisplayName;
@@ -15,8 +16,9 @@ import org.modelmapper.ModelMapper;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -73,5 +75,40 @@ class DefaultTeamServiceTest {
         }
     }
 
-    
+    @DisplayName("findById() method tests")
+    @Nested
+    class FindByIdTests {
+
+        @Test
+        @DisplayName("Should return team dto when given existing id")
+        void findById_ShouldReturnTeamDtoWhenGivenExistingId() {
+            Team expected = new Team(new TeamId(), "real madrid", "spania");
+
+            when(teamRepository.findById(any(TeamId.class))).thenReturn(Optional.of(expected));
+            when(mapper.map(any(Team.class), eq(TeamResponseDto.class)))
+                    .thenAnswer(invocation -> {
+                        Team team = invocation.getArgument(0);
+                        return new TeamResponseDto(team.getId(), team.getName(), List.of());
+                    });
+
+            TeamResponseDto actual = sut.findById(expected.getId());
+
+            assertNotNull(actual);
+            verify(teamRepository).findById(any(TeamId.class));
+            verify(mapper).map(any(Team.class), eq(TeamResponseDto.class));
+
+        }
+
+        @DisplayName("Should Throw TeamNotFoundException when given not existing id")
+        @Test
+        void findById_ShouldThrowTeamNotFoundException_WhenGivenNotExistingId() {
+            TeamId teamId = new TeamId();
+            when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
+
+            assertThrows(TeamNotFoundException.class, () -> sut.findById(teamId));
+            verify(teamRepository).findById(teamId);
+        }
+    }
+
+
 }
