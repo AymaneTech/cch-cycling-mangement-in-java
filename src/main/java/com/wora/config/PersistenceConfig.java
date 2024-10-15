@@ -1,5 +1,6 @@
 package com.wora.config;
 
+import com.wora.common.util.PropertiesReader;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.context.annotation.Bean;
@@ -21,9 +22,9 @@ public class PersistenceConfig {
     @Bean
     public DataSource dataSource() {
         HikariDataSource ds = new HikariDataSource();
-        ds.setJdbcUrl("DB_URL");
-        ds.setUsername("DB_USER");
-        ds.setPassword("DB_PASSWORD");
+        ds.setJdbcUrl(PropertiesReader.get("DB_URL"));
+        ds.setUsername(PropertiesReader.get("DB_USERNAME"));
+        ds.setPassword(PropertiesReader.get("DB_PASSWORD"));
         return ds;
     }
 
@@ -42,7 +43,7 @@ public class PersistenceConfig {
 
     @Bean
     public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
-        JpaTransactionManager tx = new JpaTransactionManager();
+         JpaTransactionManager tx = new JpaTransactionManager();
         tx.setEntityManagerFactory(entityManagerFactory);
         return tx;
     }
