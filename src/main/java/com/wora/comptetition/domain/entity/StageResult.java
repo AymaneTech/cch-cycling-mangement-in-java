@@ -3,6 +3,8 @@ package com.wora.comptetition.domain.entity;
 import com.wora.comptetition.domain.valueObject.StageResultId;
 import com.wora.rider.domain.entity.Rider;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,15 +24,18 @@ public class StageResult {
     @EmbeddedId
     private StageResultId id;
 
+    @NotNull
+    @Positive
     private Integer position;
 
+    @NotNull
     private Duration duration;
 
-    @MapsId("rider_id")
+    @MapsId("riderId")
     @ManyToOne
     private Rider rider;
 
-    @MapsId("stage_id")
+    @MapsId("stageId")
     @ManyToOne
     private Stage stage;
 }

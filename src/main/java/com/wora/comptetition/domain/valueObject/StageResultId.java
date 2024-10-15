@@ -1,10 +1,14 @@
 package com.wora.comptetition.domain.valueObject;
 
 import com.wora.rider.domain.valueObject.RiderId;
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 
 public record StageResultId(
-        @Column(name = "stage_id") StageId stageId,
-        @Column(name = "rider_id") RiderId riderId
+        @AttributeOverride(name = "value", column = @Column(name = "stageid"))
+        StageId stageId,
+
+        @AttributeOverride(name = "value", column = @Column(name = "riderid"))
+        RiderId riderId
 ) {
 }

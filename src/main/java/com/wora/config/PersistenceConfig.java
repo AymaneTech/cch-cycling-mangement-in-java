@@ -37,7 +37,7 @@ public class PersistenceConfig {
 
         factoryBean.setJpaVendorAdapter(vendorAdapter);
         factoryBean.setDataSource(dataSource());
-        factoryBean.setPackagesToScan("com.wora.rider.domain.entity");
+        factoryBean.setPackagesToScan("com.wora");
         return factoryBean;
     }
 

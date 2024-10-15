@@ -2,6 +2,7 @@ package com.wora.rider.domain.entity;
 
 import com.wora.rider.domain.valueObject.TeamId;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
@@ -14,8 +15,11 @@ public class Team {
     private TeamId id;
 
     @Column(unique = true, nullable = false)
+    @NotBlank
     private String name;
 
+    @Column
+    @NotBlank
     private String country;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)

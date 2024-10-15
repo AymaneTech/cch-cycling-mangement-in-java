@@ -20,9 +20,11 @@ public class GeneralResult {
     @EmbeddedId
     private GeneralResultId id;
 
+    @MapsId("competitionId")
     @ManyToOne
     private Competition competition;
 
+    @MapsId("riderId")
     @ManyToOne
     private Rider rider;
 }
