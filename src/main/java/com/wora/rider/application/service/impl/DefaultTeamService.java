@@ -3,6 +3,7 @@ package com.wora.rider.application.service.impl;
 import com.wora.rider.application.dto.request.TeamRequestDto;
 import com.wora.rider.application.dto.response.TeamResponseDto;
 import com.wora.rider.application.service.TeamService;
+import com.wora.rider.domain.exception.TeamNotFoundException;
 import com.wora.rider.domain.repository.TeamRepository;
 import com.wora.rider.domain.valueObject.TeamId;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +28,10 @@ public class DefaultTeamService implements TeamService {
     }
 
     @Override
-    public Optional<TeamResponseDto> findById(TeamId id) {
-        return Optional.empty();
+    public TeamResponseDto findById(TeamId id) {
+        return repository.findById(id)
+                .map(e -> mapper.map(e, TeamResponseDto.class))
+                .orElseThrow(() -> new TeamNotFoundException(id));
     }
 
     @Override
