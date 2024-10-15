@@ -54,6 +54,9 @@ public class DefaultTeamService implements TeamService {
 
     @Override
     public void delete(TeamId id) {
+        if(!repository.existsById(id))
+            throw new EntityNotFoundException(id);
 
+        repository.softDelete(id);
     }
 }
