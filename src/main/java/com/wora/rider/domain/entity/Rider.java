@@ -6,7 +6,6 @@ import com.wora.rider.domain.valueObject.Name;
 import com.wora.rider.domain.valueObject.RiderId;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
