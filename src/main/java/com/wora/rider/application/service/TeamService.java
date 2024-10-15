@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface TeamService {
     List<TeamResponseDto> findAll();
 
-    Optional<TeamResponseDto> findById(TeamId id);
+    TeamResponseDto findById(TeamId id);
 
     TeamResponseDto create(TeamRequestDto dto);
 

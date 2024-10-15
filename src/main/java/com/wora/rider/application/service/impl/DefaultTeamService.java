@@ -4,7 +4,7 @@ import com.wora.rider.application.dto.request.TeamRequestDto;
 import com.wora.rider.application.dto.response.TeamResponseDto;
 import com.wora.rider.application.service.TeamService;
 import com.wora.rider.domain.entity.Team;
-import com.wora.rider.domain.exception.TeamNotFoundException;
+import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.rider.domain.repository.TeamRepository;
 import com.wora.rider.domain.valueObject.TeamId;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class DefaultTeamService implements TeamService {
     public TeamResponseDto findById(TeamId id) {
         return repository.findById(id)
                 .map(e -> mapper.map(e, TeamResponseDto.class))
-                .orElseThrow(() -> new TeamNotFoundException(id));
+                .orElseThrow(() -> new EntityNotFoundException(id));
     }
 
     @Override
@@ -44,7 +44,7 @@ public class DefaultTeamService implements TeamService {
     @Override
     public TeamResponseDto update(TeamId id, TeamRequestDto dto) {
         final Team team = repository.findById(id)
-                .orElseThrow(() -> new TeamNotFoundException(id));
+                .orElseThrow(() -> new EntityNotFoundException(id));
 
         mapper.map(dto, team);
         final Team savedTeam = repository.save(team);
