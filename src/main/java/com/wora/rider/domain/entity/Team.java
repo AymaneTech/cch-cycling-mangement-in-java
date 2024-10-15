@@ -16,6 +16,8 @@ public class Team {
     @Column(unique = true, nullable = false)
     private String name;
 
+    private String country;
+
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
     private List<Rider> riders;
 }
