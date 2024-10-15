@@ -14,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +50,7 @@ class DefaultTeamServiceTest {
             );
 
             when(teamRepository.findAll()).thenReturn(excepted);
-            when(mapper.map(any(Team.class), eq(TeamResponseDto.class)))
+            when(mapper.map(any(Team.class), TeamResponseDto.class))
                     .thenAnswer(invocation -> {
                         Team team = invocation.getArgument(0);
                         return new TeamResponseDto(team.getId(), team.getName(), team.getCountry(), List.of());
@@ -61,7 +60,7 @@ class DefaultTeamServiceTest {
 
             assertEquals(excepted.size(), actual.size());
             verify(teamRepository).findAll();
-            verify(mapper, times(2)).map(any(Team.class), eq(TeamResponseDto.class));
+            verify(mapper, times(2)).map(any(Team.class), TeamResponseDto.class);
         }
 
         @DisplayName("Should return empty list when no teams exists")
@@ -73,7 +72,7 @@ class DefaultTeamServiceTest {
 
             assertEquals(0, actual.size());
             verify(teamRepository).findAll();
-            verify(mapper, never()).map(any(Team.class), eq(TeamResponseDto.class));
+            verify(mapper, never()).map(any(Team.class), TeamResponseDto.class);
         }
     }
 
@@ -87,7 +86,7 @@ class DefaultTeamServiceTest {
             Team expected = new Team(new TeamId(), "real madrid", "spania");
 
             when(teamRepository.findById(any(TeamId.class))).thenReturn(Optional.of(expected));
-            when(mapper.map(any(Team.class), eq(TeamResponseDto.class)))
+            when(mapper.map(any(Team.class), TeamResponseDto.class))
                     .thenAnswer(invocation -> {
                         Team team = invocation.getArgument(0);
                         return new TeamResponseDto(team.getId(), team.getName(), team.getCountry(), List.of());
@@ -126,7 +125,7 @@ class DefaultTeamServiceTest {
             when(teamRepository.save(any(Team.class)))
                     .thenReturn(expected);
 
-            when(mapper.map(any(Team.class), eq(TeamResponseDto.class)))
+            when(mapper.map(any(Team.class), TeamResponseDto.class))
                     .thenReturn(new TeamResponseDto(expected.getId(), expected.getName(), expected.getCountry(), List.of()));
 
             TeamResponseDto actual = sut.create(dto);
@@ -149,5 +148,35 @@ class DefaultTeamServiceTest {
         }
     }
 
+    @DisplayName("Update method tests")
+    @Nested
+    class UpdateTests {
+        @DisplayName("Should return updated team when given valid id and request dto")
+        @Test
+        void update_ShouldReturnUpdatedTeam_WhenGivenExistingIdAndRequestDto() {
+            TeamRequestDto dto = new TeamRequestDto("Marrakech boys", "Morocco");
+            TeamId teamId = new TeamId(); // Assuming this is properly initialized
+            Team expected = new Team(teamId, dto.name(), dto.country());
 
+            when(teamRepository.findById(teamId)).thenReturn(Optional.of(expected));
+
+            when(mapper.map(dto, Team.class)).thenReturn(expected);
+
+            expected.setCountry("updated country");
+            expected.setName("updated name");
+
+            when(teamRepository.save(expected)).thenReturn(expected);
+
+            when(mapper.map(any(Team.class), eq(TeamResponseDto.class)))
+                    .thenReturn(new TeamResponseDto(teamId, expected.getName(), expected.getCountry(), List.of()));
+
+            TeamResponseDto actual = sut.update(teamId, dto);
+
+            assertEquals(expected.getId(), actual.id());
+            assertEquals("updated name", actual.name());
+            assertEquals("updated country", actual.country());
+        }
+
+
+    }
 }

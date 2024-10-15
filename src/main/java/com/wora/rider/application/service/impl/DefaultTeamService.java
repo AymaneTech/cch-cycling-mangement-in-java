@@ -43,7 +43,13 @@ public class DefaultTeamService implements TeamService {
 
     @Override
     public TeamResponseDto update(TeamId id, TeamRequestDto dto) {
-        return null;
+        final Team team = repository.findById(id)
+                .orElseThrow(() -> new TeamNotFoundException(id));
+
+        mapper.map(dto, team);
+        final Team savedTeam = repository.save(team);
+
+        return mapper.map(savedTeam, TeamResponseDto.class);
     }
 
     @Override
