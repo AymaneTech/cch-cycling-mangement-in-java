@@ -3,7 +3,7 @@ package com.wora.rider.application.service.impl;
 import com.wora.rider.application.dto.request.TeamRequestDto;
 import com.wora.rider.application.dto.response.TeamResponseDto;
 import com.wora.rider.domain.entity.Team;
-import com.wora.rider.domain.exception.TeamNotFoundException;
+import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.rider.domain.repository.TeamRepository;
 import com.wora.rider.domain.valueObject.TeamId;
 import org.junit.jupiter.api.DisplayName;
@@ -105,7 +105,7 @@ class DefaultTeamServiceTest {
             TeamId teamId = new TeamId();
             when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
 
-            assertThrows(TeamNotFoundException.class, () -> sut.findById(teamId));
+            assertThrows(EntityNotFoundException.class, () -> sut.findById(teamId));
             verify(teamRepository).findById(teamId);
         }
     }
@@ -154,29 +154,45 @@ class DefaultTeamServiceTest {
         @DisplayName("Should return updated team when given valid id and request dto")
         @Test
         void update_ShouldReturnUpdatedTeam_WhenGivenExistingIdAndRequestDto() {
-            TeamRequestDto dto = new TeamRequestDto("Marrakech boys", "Morocco");
-            TeamId teamId = new TeamId(); // Assuming this is properly initialized
-            Team expected = new Team(teamId, dto.name(), dto.country());
+            TeamId teamId = new TeamId();
+            TeamRequestDto dto = new TeamRequestDto("new name", "new country");
+            Team existingTeam = new Team(teamId, "old name", "old country");
+            Team updatedTeam = new Team(teamId, dto.name(), dto.country());
 
-            when(teamRepository.findById(teamId)).thenReturn(Optional.of(expected));
+            when(teamRepository.findById(teamId)).thenReturn(Optional.of(existingTeam));
 
-            when(mapper.map(dto, Team.class)).thenReturn(expected);
+            doAnswer(invocation -> {
+                Team team = invocation.getArgument(1);
+                team.setName(dto.name());
+                team.setCountry(dto.country());
+                return null;
+            }).when(mapper).map(eq(dto), any(Team.class));
 
-            expected.setCountry("updated country");
-            expected.setName("updated name");
-
-            when(teamRepository.save(expected)).thenReturn(expected);
-
-            when(mapper.map(any(Team.class), eq(TeamResponseDto.class)))
-                    .thenReturn(new TeamResponseDto(teamId, expected.getName(), expected.getCountry(), List.of()));
+            when(teamRepository.save(any(Team.class))).thenReturn(updatedTeam);
+            when(mapper.map(updatedTeam, TeamResponseDto.class)).thenReturn(
+                    new TeamResponseDto(teamId, updatedTeam.getName(), updatedTeam.getCountry(), List.of())
+            );
 
             TeamResponseDto actual = sut.update(teamId, dto);
 
-            assertEquals(expected.getId(), actual.id());
-            assertEquals("updated name", actual.name());
-            assertEquals("updated country", actual.country());
+            assertNotNull(actual);
+            assertEquals(dto.name(), actual.name());
+            assertEquals(dto.country(), actual.country());
+            verify(teamRepository).findById(teamId);
+            verify(teamRepository).save(any(Team.class));
+            verify(mapper).map(eq(dto), any(Team.class));
+            verify(mapper).map(eq(updatedTeam), eq(TeamResponseDto.class));
         }
 
+        @DisplayName("Should throw exception EntityNotFoundException when given not existing team Id")
+        @Test
+        void update_ShouldThrowEntityNotFoundException_WhenGivenNotExistingId() {
+            TeamId teamId = new TeamId();
 
+            when(teamRepository.findById(eq(teamId)))
+                    .thenReturn(Optional.empty());
+
+            assertThrows(EntityNotFoundException.class, () -> sut.findById(teamId));
+        }
     }
 }
