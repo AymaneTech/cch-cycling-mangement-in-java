@@ -7,6 +7,7 @@ import java.util.List;
 public record TeamResponseDto(
         TeamId id,
         String name,
+        String country,
         List<RiderResponseDto> riders
 ) {
 }
