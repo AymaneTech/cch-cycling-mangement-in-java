@@ -3,6 +3,7 @@ package com.wora.rider.application.service.impl;
 import com.wora.rider.application.dto.request.TeamRequestDto;
 import com.wora.rider.application.dto.response.TeamResponseDto;
 import com.wora.rider.application.service.TeamService;
+import com.wora.rider.domain.entity.Team;
 import com.wora.rider.domain.exception.TeamNotFoundException;
 import com.wora.rider.domain.repository.TeamRepository;
 import com.wora.rider.domain.valueObject.TeamId;
@@ -36,7 +37,8 @@ public class DefaultTeamService implements TeamService {
 
     @Override
     public TeamResponseDto create(TeamRequestDto dto) {
-        return null;
+        Team savedTeam = repository.save(mapper.map(dto, Team.class));
+        return mapper.map(savedTeam, TeamResponseDto.class);
     }
 
     @Override

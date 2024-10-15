@@ -1,5 +1,6 @@
 package com.wora.rider.application.service.impl;
 
+import com.wora.rider.application.dto.request.TeamRequestDto;
 import com.wora.rider.application.dto.response.TeamResponseDto;
 import com.wora.rider.domain.entity.Team;
 import com.wora.rider.domain.exception.TeamNotFoundException;
@@ -13,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +54,7 @@ class DefaultTeamServiceTest {
             when(mapper.map(any(Team.class), eq(TeamResponseDto.class)))
                     .thenAnswer(invocation -> {
                         Team team = invocation.getArgument(0);
-                        return new TeamResponseDto(team.getId(), team.getName(), List.of());
+                        return new TeamResponseDto(team.getId(), team.getName(), team.getCountry(), List.of());
                     });
 
             List<TeamResponseDto> actual = sut.findAll();
@@ -88,7 +90,7 @@ class DefaultTeamServiceTest {
             when(mapper.map(any(Team.class), eq(TeamResponseDto.class)))
                     .thenAnswer(invocation -> {
                         Team team = invocation.getArgument(0);
-                        return new TeamResponseDto(team.getId(), team.getName(), List.of());
+                        return new TeamResponseDto(team.getId(), team.getName(), team.getCountry(), List.of());
                     });
 
             TeamResponseDto actual = sut.findById(expected.getId());
@@ -96,7 +98,6 @@ class DefaultTeamServiceTest {
             assertNotNull(actual);
             verify(teamRepository).findById(any(TeamId.class));
             verify(mapper).map(any(Team.class), eq(TeamResponseDto.class));
-
         }
 
         @DisplayName("Should Throw TeamNotFoundException when given not existing id")
@@ -107,6 +108,44 @@ class DefaultTeamServiceTest {
 
             assertThrows(TeamNotFoundException.class, () -> sut.findById(teamId));
             verify(teamRepository).findById(teamId);
+        }
+    }
+
+    @DisplayName("create() method tests")
+    @Nested
+    class CreateTests {
+        @DisplayName("Should create team when given valid team dto")
+        @Test
+        void create_ShouldReturnCreatedTeamWhenGivenValidTeamDto() {
+            TeamRequestDto dto = new TeamRequestDto("marrakech", "morocco");
+            Team expected = new Team(new TeamId(), dto.name(), dto.country());
+
+            when(mapper.map(any(TeamRequestDto.class), eq(Team.class)))
+                    .thenReturn(expected);
+
+            when(teamRepository.save(any(Team.class)))
+                    .thenReturn(expected);
+
+            when(mapper.map(any(Team.class), eq(TeamResponseDto.class)))
+                    .thenReturn(new TeamResponseDto(expected.getId(), expected.getName(), expected.getCountry(), List.of()));
+
+            TeamResponseDto actual = sut.create(dto);
+
+            assertEquals(expected.getId(), actual.id());
+            assertNotNull(actual);
+            verify(teamRepository).save(any(Team.class));
+        }
+
+        @DisplayName("Should Throw runtime exception when repository fails to save")
+        @Test
+        void create_ShouldThrowRuntimeException_WhenRepositoryFailsToSave() {
+            TeamRequestDto dto = new TeamRequestDto("marrakech", "morocco");
+            Team expected = new Team(new TeamId(), dto.name(), dto.country());
+
+            when(teamRepository.save(expected))
+                    .thenThrow(RuntimeException.class);
+
+            assertThrows(RuntimeException.class, () -> sut.create(dto));
         }
     }
 
