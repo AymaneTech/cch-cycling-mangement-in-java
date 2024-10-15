@@ -21,10 +21,8 @@ public interface CustomJpaRepository<T, ID> extends JpaRepository<T, ID> {
     @Query("SELECT e FROM #{#entityName} e")
     List<T> findAllWithTrashed();
 
-
     @Query("SELECT e FROM #{#entityName} e WHERE e.deletedAt IS NOT NULL")
     List<T> findAllDeleted();
-
 
     @Query("SELECT e FROM #{#entityName} e WHERE e.id = :id AND e.deletedAt IS NULL")
     Optional<T> findById(@Param("id") ID id);
