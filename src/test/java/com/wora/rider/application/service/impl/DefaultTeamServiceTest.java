@@ -1,9 +1,9 @@
 package com.wora.rider.application.service.impl;
 
+import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.rider.application.dto.request.TeamRequestDto;
 import com.wora.rider.application.dto.response.TeamResponseDto;
 import com.wora.rider.domain.entity.Team;
-import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.rider.domain.repository.TeamRepository;
 import com.wora.rider.domain.valueObject.TeamId;
 import org.junit.jupiter.api.DisplayName;
@@ -40,7 +40,6 @@ class DefaultTeamServiceTest {
     @Nested
     @DisplayName("findAll() method tests")
     class FindAllTests {
-
         @DisplayName("Should return all teams when exists")
         @Test
         void findAll_ShouldReturnAllTeams_WhenTeamsExists() {
@@ -50,7 +49,7 @@ class DefaultTeamServiceTest {
             );
 
             when(teamRepository.findAll()).thenReturn(excepted);
-            when(mapper.map(any(Team.class), TeamResponseDto.class))
+            when(mapper.map(any(Team.class), eq(TeamResponseDto.class)))
                     .thenAnswer(invocation -> {
                         Team team = invocation.getArgument(0);
                         return new TeamResponseDto(team.getId(), team.getName(), team.getCountry(), List.of());
@@ -60,7 +59,7 @@ class DefaultTeamServiceTest {
 
             assertEquals(excepted.size(), actual.size());
             verify(teamRepository).findAll();
-            verify(mapper, times(2)).map(any(Team.class), TeamResponseDto.class);
+            verify(mapper, times(2)).map(any(Team.class), eq(TeamResponseDto.class));
         }
 
         @DisplayName("Should return empty list when no teams exists")
@@ -72,21 +71,20 @@ class DefaultTeamServiceTest {
 
             assertEquals(0, actual.size());
             verify(teamRepository).findAll();
-            verify(mapper, never()).map(any(Team.class), TeamResponseDto.class);
+            verify(mapper, never()).map(any(Team.class), eq(TeamResponseDto.class));
         }
     }
 
     @DisplayName("findById() method tests")
     @Nested
     class FindByIdTests {
-
         @Test
         @DisplayName("Should return team dto when given existing id")
         void findById_ShouldReturnTeamDtoWhenGivenExistingId() {
             Team expected = new Team(new TeamId(), "real madrid", "spania");
 
             when(teamRepository.findById(any(TeamId.class))).thenReturn(Optional.of(expected));
-            when(mapper.map(any(Team.class), TeamResponseDto.class))
+            when(mapper.map(any(Team.class), eq(TeamResponseDto.class)))
                     .thenAnswer(invocation -> {
                         Team team = invocation.getArgument(0);
                         return new TeamResponseDto(team.getId(), team.getName(), team.getCountry(), List.of());
@@ -125,7 +123,7 @@ class DefaultTeamServiceTest {
             when(teamRepository.save(any(Team.class)))
                     .thenReturn(expected);
 
-            when(mapper.map(any(Team.class), TeamResponseDto.class))
+            when(mapper.map(any(Team.class), eq(TeamResponseDto.class)))
                     .thenReturn(new TeamResponseDto(expected.getId(), expected.getName(), expected.getCountry(), List.of()));
 
             TeamResponseDto actual = sut.create(dto);
@@ -193,6 +191,32 @@ class DefaultTeamServiceTest {
                     .thenReturn(Optional.empty());
 
             assertThrows(EntityNotFoundException.class, () -> sut.findById(teamId));
+        }
+    }
+
+    @DisplayName("delete() method tests")
+    @Nested
+    class DeleteTests {
+        @DisplayName("Should delete team when given existing id")
+        @Test
+        void delete_ShouldDeleteTeamWhenGivenExistingId() {
+            TeamId teamId = new TeamId();
+
+            when(teamRepository.existsById(eq(teamId))).thenReturn(true);
+
+            sut.delete(teamId);
+
+            verify(teamRepository).softDelete(eq(teamId));
+        }
+
+        @DisplayName("Should Throw Entity Not Found Exception When Given Not Existing Id")
+        @Test
+        void delete_ShouldThrowEntityNotFoundExceptionWhenGivenNotExistingId() {
+            TeamId teamId = new TeamId();
+
+            when(teamRepository.existsById(eq(teamId))).thenReturn(false);
+
+            assertThrows(EntityNotFoundException.class, () -> sut.delete(teamId));
         }
     }
 }
