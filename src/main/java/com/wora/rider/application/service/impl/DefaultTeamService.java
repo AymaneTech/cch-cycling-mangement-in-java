@@ -6,6 +6,7 @@ import com.wora.rider.application.service.TeamService;
 import com.wora.rider.domain.repository.TeamRepository;
 import com.wora.rider.domain.valueObject.TeamId;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,9 +17,14 @@ import java.util.Optional;
 public class DefaultTeamService implements TeamService {
 
     private final TeamRepository repository;
+    private final ModelMapper mapper;
 
     @Override
     public List<TeamResponseDto> findAll() {
+        return repository.findAll()
+                .stream()
+                .map(e -> mapper.map(e, TeamResponseDto.class))
+                .toList();
     }
 
     @Override
