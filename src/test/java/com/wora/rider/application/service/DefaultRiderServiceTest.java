@@ -8,13 +8,11 @@ import com.wora.rider.application.service.impl.DefaultRiderService;
 import com.wora.rider.domain.entity.Rider;
 import com.wora.rider.domain.entity.Team;
 import com.wora.rider.domain.repository.RiderRepository;
+import com.wora.rider.domain.repository.TeamRepository;
 import com.wora.rider.domain.valueObject.Name;
 import com.wora.rider.domain.valueObject.RiderId;
 import com.wora.rider.domain.valueObject.TeamId;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -24,7 +22,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,6 +37,9 @@ class DefaultRiderServiceTest {
     private RiderRepository riderRepository;
 
     @Mock
+    private TeamRepository teamRepository;
+
+    @Mock
     private ModelMapper mapper;
 
     //    @InjectMocks
@@ -47,7 +47,7 @@ class DefaultRiderServiceTest {
 
     @BeforeEach
     void setup() {
-        sut = new DefaultRiderService(riderRepository, mapper);
+        sut = new DefaultRiderService(riderRepository, teamRepository, mapper);
     }
 
     @DisplayName("findAll() method tests")
@@ -124,9 +124,13 @@ class DefaultRiderServiceTest {
         @DisplayName("Should Create Rider When Given Valid Request")
         @Test
         void create_ShouldCreateRiderWhenGivenValidRequest() {
-            RiderRequestDto dto = new RiderRequestDto(new Name("aymane", "el maini"), "morocco", LocalDate.of(2004, 10, 27), UUID.randomUUID());
+            TeamId teamId = new TeamId();
+            RiderRequestDto dto = new RiderRequestDto(new Name("aymane", "el maini"), "morocco", LocalDate.of(2004, 10, 27), teamId.value());
             Rider expected = new Rider(new RiderId(), dto.name(), dto.nationality(), dto.dateOfBirth(), new Team());
 
+            when(teamRepository.findById(any(TeamId.class))).thenReturn(Optional.of(new Team()));
+            when(mapper.map(any(RiderRequestDto.class), eq(Rider.class)))
+                    .thenReturn(expected);
             when(riderRepository.save(any(Rider.class))).thenReturn(expected);
             when(mapper.map(any(Rider.class), eq(RiderResponseDto.class)))
                     .thenAnswer(invocation -> {
@@ -138,6 +142,13 @@ class DefaultRiderServiceTest {
 
             assertEquals(expected.getId(), actual.id());
             assertEquals(expected.getName(), actual.name());
+        }
+
+        @DisplayName("Should throw exception when given team not found")
+        @Test
+        @Disabled
+        void create_ShouldThrowEntityNotFound_WhenGivenTeamNotFound() {
+//            RiderRequestDto
         }
     }
 }
