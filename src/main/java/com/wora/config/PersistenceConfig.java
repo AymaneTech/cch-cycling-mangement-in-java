@@ -38,12 +38,22 @@ public class PersistenceConfig {
         factoryBean.setJpaVendorAdapter(vendorAdapter);
         factoryBean.setDataSource(dataSource());
         factoryBean.setPackagesToScan("com.wora");
+
+        /*
+        Properties jpaProperties = new Properties();
+        jpaProperties.put("hibernate.hbm2ddl.auto", PropertiesReader.get("HIBERNATE_DDL_AUTO"));
+        jpaProperties.put("hibernate.dialect", PropertiesReader.get("HIBERNATE_DIALECT"));
+        jpaProperties.put("hibernate.show_sql", PropertiesReader.get("HIBERNATE_SHOW_SQL"));
+        jpaProperties.put("hibernate.format_sql", PropertiesReader.get("HIBERNATE_FORMAT_SQL"));
+        factoryBean.setJpaProperties(jpaProperties);
+        factoryBean.setJpaProperties(jpa);
+         */
         return factoryBean;
     }
 
     @Bean
     public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
-         JpaTransactionManager tx = new JpaTransactionManager();
+        JpaTransactionManager tx = new JpaTransactionManager();
         tx.setEntityManagerFactory(entityManagerFactory);
         return tx;
     }

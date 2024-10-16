@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 
 import java.util.List;
 
@@ -14,6 +15,8 @@ import java.util.List;
 @Table(name = "teams")
 
 @Getter
+@Setter
+@Accessors(chain = true)
 @ToString
 @NoArgsConstructor
 public class Team {
@@ -36,25 +39,5 @@ public class Team {
         this.id = id;
         this.name = name;
         this.country = country;
-    }
-
-    public Team setId(TeamId id) {
-        this.id = id;
-        return this;
-    }
-
-    public Team setName(@NotBlank String name) {
-        this.name = name;
-        return this;
-    }
-
-    public Team setCountry(@NotBlank String country) {
-        this.country = country;
-        return this;
-    }
-
-    public Team setRiders(List<Rider> riders) {
-        this.riders = riders;
-        return this;
     }
 }

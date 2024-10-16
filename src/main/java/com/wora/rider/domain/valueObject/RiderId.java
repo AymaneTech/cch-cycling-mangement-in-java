@@ -6,4 +6,7 @@ import java.util.UUID;
 
 @Embeddable
 public record RiderId(UUID value) {
+    public RiderId() {
+        this(UUID.randomUUID());
+    }
 }

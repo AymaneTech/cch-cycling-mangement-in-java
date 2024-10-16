@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@Accessors(chain = true)
 @NoArgsConstructor
 public class Rider {
 
@@ -41,4 +43,12 @@ public class Rider {
 
     @OneToMany(mappedBy = "rider")
     private List<GeneralResult> generalResults;
+
+    public Rider(RiderId id, Name name, String nationality, LocalDate dateOfBirth, Team team) {
+        this.id = id;
+        this.name = name;
+        this.nationality = nationality;
+        this.dateOfBirth = dateOfBirth;
+        this.team = team;
+    }
 }
