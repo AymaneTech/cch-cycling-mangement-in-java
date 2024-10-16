@@ -1,10 +1,10 @@
 package com.wora.rider.application.service.impl;
 
+import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.rider.application.dto.request.TeamRequestDto;
 import com.wora.rider.application.dto.response.TeamResponseDto;
 import com.wora.rider.application.service.TeamService;
 import com.wora.rider.domain.entity.Team;
-import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.rider.domain.repository.TeamRepository;
 import com.wora.rider.domain.valueObject.TeamId;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +24,14 @@ public class DefaultTeamService implements TeamService {
     public List<TeamResponseDto> findAll() {
         return repository.findAll()
                 .stream()
-                .map(e -> mapper.map(e, TeamResponseDto.class))
+                .map(this::toResponseDto)
                 .toList();
     }
 
     @Override
     public TeamResponseDto findById(TeamId id) {
         return repository.findById(id)
-                .map(e -> mapper.map(e, TeamResponseDto.class))
+                .map(this::toResponseDto)
                 .orElseThrow(() -> new EntityNotFoundException(id));
     }
 
@@ -54,9 +54,13 @@ public class DefaultTeamService implements TeamService {
 
     @Override
     public void delete(TeamId id) {
-        if(!repository.existsById(id))
+        if (!repository.existsById(id))
             throw new EntityNotFoundException(id);
 
         repository.softDelete(id);
+    }
+
+    private TeamResponseDto toResponseDto(Team team) {
+        return mapper.map(team, TeamResponseDto.class);
     }
 }
