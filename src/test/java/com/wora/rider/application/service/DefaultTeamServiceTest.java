@@ -1,16 +1,17 @@
-package com.wora.rider.application.service.impl;
+package com.wora.rider.application.service;
 
 import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.rider.application.dto.request.TeamRequestDto;
 import com.wora.rider.application.dto.response.TeamResponseDto;
+import com.wora.rider.application.service.impl.DefaultTeamService;
 import com.wora.rider.domain.entity.Team;
 import com.wora.rider.domain.repository.TeamRepository;
 import com.wora.rider.domain.valueObject.TeamId;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
@@ -34,8 +35,13 @@ class DefaultTeamServiceTest {
     @Mock
     private ModelMapper mapper;
 
-    @InjectMocks
-    private DefaultTeamService sut;
+    //    @InjectMocks
+    private TeamService sut;
+
+    @BeforeEach
+    void setup() {
+        this.sut = new DefaultTeamService(teamRepository, mapper);
+    }
 
     @Nested
     @DisplayName("findAll() method tests")
@@ -161,8 +167,8 @@ class DefaultTeamServiceTest {
 
             doAnswer(invocation -> {
                 Team team = invocation.getArgument(1);
-                team.setName(dto.name());
-                team.setCountry(dto.country());
+                team.setName(dto.name())
+                        .setCountry(dto.country());
                 return null;
             }).when(mapper).map(eq(dto), any(Team.class));
 
