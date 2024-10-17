@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@Accessors(chain = true)
 @NoArgsConstructor
 public class Stage {
 
