@@ -61,8 +61,7 @@ public class DefaultRiderService implements RiderService {
         mapper.map(dto, rider);
         rider.setTeam(team);
 
-        Rider savedRider = repository.save(rider);
-        return toResponseDto(savedRider);
+        return toResponseDto(rider);
     }
 
     @Override

@@ -37,7 +37,7 @@ public class Rider {
 
     private LocalDate dateOfBirth;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(optional = false)
     private Team team;
 
     @OneToMany(mappedBy = "rider")

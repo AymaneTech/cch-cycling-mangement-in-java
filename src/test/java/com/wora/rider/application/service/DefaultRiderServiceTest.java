@@ -31,7 +31,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Default Rider Service Test")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DefaultRiderServiceTest {
 
     @Mock
@@ -43,11 +42,11 @@ class DefaultRiderServiceTest {
     @Mock
     private ModelMapper mapper;
 
-    private Team team;
-    private Rider rider;
-
     //    @InjectMocks
     private RiderService sut;
+
+    private Team team;
+    private Rider rider;
 
     @BeforeEach
     void setup() {
@@ -187,9 +186,8 @@ class DefaultRiderServiceTest {
                         .setDateOfBirth(dto.dateOfBirth());
                 return null;
             }).when(mapper).map(eq(dto), any(Rider.class));
-            when(riderRepository.save(any(Rider.class))).thenReturn(updatedRider);
             when(mapper.map(any(Rider.class), eq(RiderResponseDto.class)))
-                    .thenReturn(new RiderResponseDto(updatedRider.getId(), updatedRider.getName(),updatedRider.getNationality(), updatedRider.getDateOfBirth(), null));
+                    .thenReturn(new RiderResponseDto(updatedRider.getId(), updatedRider.getName(), updatedRider.getNationality(), updatedRider.getDateOfBirth(), null));
 
             RiderResponseDto actual = sut.update(rider.getId(), dto);
 

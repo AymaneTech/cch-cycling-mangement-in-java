@@ -49,8 +49,7 @@ public class DefaultCompetitionService implements CompetitionService {
         final Competition competition = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id));
         mapper.map(dto, competition);
-        final Competition savedCompetition = repository.save(competition);
-        return toResponseDto(savedCompetition);
+        return toResponseDto(competition);
     }
 
     @Override

@@ -51,9 +51,8 @@ public class DefaultTeamService implements TeamService {
                 .orElseThrow(() -> new EntityNotFoundException(id));
 
         mapper.map(dto, team);
-        final Team savedTeam = repository.save(team);
 
-        return mapper.map(savedTeam, TeamResponseDto.class);
+        return mapper.map(team, TeamResponseDto.class);
     }
 
     @Override

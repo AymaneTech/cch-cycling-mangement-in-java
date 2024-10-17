@@ -158,7 +158,6 @@ class DefaultTeamServiceTest {
             TeamId teamId = new TeamId();
             TeamRequestDto dto = new TeamRequestDto("new name", "new country");
             Team existingTeam = new Team(teamId, "old name", "old country");
-            Team updatedTeam = new Team(teamId, dto.name(), dto.country());
 
             when(teamRepository.findById(teamId)).thenReturn(Optional.of(existingTeam));
 
@@ -169,9 +168,8 @@ class DefaultTeamServiceTest {
                 return null;
             }).when(mapper).map(eq(dto), any(Team.class));
 
-            when(teamRepository.save(any(Team.class))).thenReturn(updatedTeam);
-            when(mapper.map(updatedTeam, TeamResponseDto.class)).thenReturn(
-                    new TeamResponseDto(teamId, updatedTeam.getName(), updatedTeam.getCountry(), List.of())
+            when(mapper.map(existingTeam, TeamResponseDto.class)).thenReturn(
+                    new TeamResponseDto(teamId, dto.name(), dto.country(), List.of())
             );
 
             TeamResponseDto actual = sut.update(teamId, dto);
@@ -179,11 +177,13 @@ class DefaultTeamServiceTest {
             assertNotNull(actual);
             assertEquals(dto.name(), actual.name());
             assertEquals(dto.country(), actual.country());
+
             verify(teamRepository).findById(teamId);
-            verify(teamRepository).save(any(Team.class));
             verify(mapper).map(eq(dto), any(Team.class));
-            verify(mapper).map(eq(updatedTeam), eq(TeamResponseDto.class));
+            verify(mapper).map(eq(existingTeam), eq(TeamResponseDto.class));
+            verifyNoMoreInteractions(teamRepository);
         }
+
 
         @DisplayName("Should throw exception EntityNotFoundException when given not existing team Id")
         @Test
