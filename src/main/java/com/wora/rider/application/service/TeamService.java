@@ -1,19 +1,10 @@
 package com.wora.rider.application.service;
 
+import com.wora.common.application.service.CrudService;
 import com.wora.rider.application.dto.request.TeamRequestDto;
 import com.wora.rider.application.dto.response.TeamResponseDto;
+import com.wora.rider.domain.entity.Team;
 import com.wora.rider.domain.valueObject.TeamId;
 
-import java.util.List;
-
-public interface TeamService {
-    List<TeamResponseDto> findAll();
-
-    TeamResponseDto findById(TeamId id);
-
-    TeamResponseDto create(TeamRequestDto dto);
-
-    TeamResponseDto update(TeamId id, TeamRequestDto dto);
-
-    void delete(TeamId id);
+public interface TeamService extends CrudService<Team, TeamId, TeamRequestDto, TeamResponseDto> {
 }
