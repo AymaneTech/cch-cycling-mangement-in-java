@@ -31,5 +31,5 @@ public interface CustomJpaRepository<T, ID> extends JpaRepository<T, ID> {
     @Modifying
     @Transactional
     @Query("UPDATE #{#entityName} e SET e.deletedAt = CURRENT_TIMESTAMP WHERE e.id = :id")
-    void softDelete(ID id);
+    void softDeleteById(ID id);
 }
