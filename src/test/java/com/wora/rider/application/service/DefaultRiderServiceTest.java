@@ -22,15 +22,16 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Default Rider Service Test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DefaultRiderServiceTest {
 
     @Mock
@@ -42,12 +43,17 @@ class DefaultRiderServiceTest {
     @Mock
     private ModelMapper mapper;
 
+    private Team team;
+    private Rider rider;
+
     //    @InjectMocks
     private RiderService sut;
 
     @BeforeEach
     void setup() {
         sut = new DefaultRiderService(riderRepository, teamRepository, mapper);
+        team = new Team(new TeamId(), "kacm", "morocco");
+        rider = new Rider(new RiderId(), new Name("aymane", "el maini"), "morocco", LocalDate.now(), team);
     }
 
     @DisplayName("findAll() method tests")
@@ -56,7 +62,6 @@ class DefaultRiderServiceTest {
         @DisplayName("Should return riders list when given existing riders")
         @Test
         void findAll_ShouldReturnRidersList_WhenGivenExistingRiders() {
-            Team team = new Team(new TeamId(), "kacm", "morocco");
             List<Rider> expected = List.of(
                     new Rider(new RiderId(), new Name("abdelhak", "azrour"), "morocco", LocalDate.of(2024, 10, 10), team),
                     new Rider(new RiderId(), new Name("hamza", "lamin"), "morocco", LocalDate.now(), team)
@@ -97,15 +102,13 @@ class DefaultRiderServiceTest {
         @DisplayName("Should return existing rider when given existing id")
         @Test
         void findById_ShouldReturnExistingRiderWhenGivenExistingId() {
-            Rider expected = new Rider(new RiderId(), new Name("aymane", "el maini"), "morocco", LocalDate.now(), new Team());
-
-            when(riderRepository.findById(expected.getId())).thenReturn(Optional.of(expected));
+            when(riderRepository.findById(rider.getId())).thenReturn(Optional.of(rider));
             when(mapper.map(any(Rider.class), eq(RiderResponseDto.class)))
-                    .thenReturn(new RiderResponseDto(expected.getId(), expected.getName(), expected.getNationality(), expected.getDateOfBirth(), null));
+                    .thenReturn(new RiderResponseDto(rider.getId(), rider.getName(), rider.getNationality(), rider.getDateOfBirth(), null));
 
-            RiderResponseDto actual = sut.findById(expected.getId());
+            RiderResponseDto actual = sut.findById(rider.getId());
 
-            assertEquals(expected.getId(), actual.id());
+            assertEquals(rider.getId(), actual.id());
             assertNotNull(actual);
         }
 
@@ -126,29 +129,74 @@ class DefaultRiderServiceTest {
         void create_ShouldCreateRiderWhenGivenValidRequest() {
             TeamId teamId = new TeamId();
             RiderRequestDto dto = new RiderRequestDto(new Name("aymane", "el maini"), "morocco", LocalDate.of(2004, 10, 27), teamId.value());
-            Rider expected = new Rider(new RiderId(), dto.name(), dto.nationality(), dto.dateOfBirth(), new Team());
+            Rider rider = new Rider(new RiderId(), dto.name(), dto.nationality(), dto.dateOfBirth(), new Team());
 
             when(teamRepository.findById(any(TeamId.class))).thenReturn(Optional.of(new Team()));
             when(mapper.map(any(RiderRequestDto.class), eq(Rider.class)))
-                    .thenReturn(expected);
-            when(riderRepository.save(any(Rider.class))).thenReturn(expected);
+                    .thenReturn(rider);
+            when(riderRepository.save(any(Rider.class))).thenReturn(rider);
             when(mapper.map(any(Rider.class), eq(RiderResponseDto.class)))
                     .thenAnswer(invocation -> {
-                        Rider rider = invocation.getArgument(0);
-                        return new RiderResponseDto(rider.getId(), rider.getName(), rider.getNationality(), rider.getDateOfBirth(), null);
+                        Rider r = invocation.getArgument(0);
+                        return new RiderResponseDto(r.getId(), r.getName(), r.getNationality(), r.getDateOfBirth(), null);
                     });
 
             RiderResponseDto actual = sut.create(dto);
 
-            assertEquals(expected.getId(), actual.id());
-            assertEquals(expected.getName(), actual.name());
+            assertEquals(rider.getId(), actual.id());
+            assertEquals(rider.getName(), actual.name());
         }
 
         @DisplayName("Should throw exception when given team not found")
         @Test
-        @Disabled
         void create_ShouldThrowEntityNotFound_WhenGivenTeamNotFound() {
-//            RiderRequestDto
+            TeamId teamId = new TeamId();
+            RiderRequestDto dto = new RiderRequestDto(new Name("aymane", "el maini"), "morocco", LocalDate.of(2004, 10, 27), teamId.value());
+
+            when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
+
+            assertThrows(EntityNotFoundException.class, () -> sut.create(dto));
+        }
+
+        @DisplayName("Should Throw runtime exception when repository fails to save")
+        @Test
+        void create_ShouldThrowRuntimeException_WhenRepositoryFailsToSave() {
+            RiderRequestDto dto = new RiderRequestDto(new Name("aymane", "el maini"), "morocco", LocalDate.of(2004, 10, 27), UUID.randomUUID());
+
+            lenient().when(teamRepository.findById(any(TeamId.class))).thenReturn(Optional.of(new Team()));
+
+            assertThrows(RuntimeException.class, () -> sut.create(dto));
+        }
+    }
+
+    @DisplayName("update() method tests")
+    @Nested
+    class UpdateTests {
+        @DisplayName("Should return updated rider when given existing id")
+        @Test
+        void update_ShouldReturnUpdatedRiderWhenGivenExistingId() {
+            RiderRequestDto dto = new RiderRequestDto(new Name("udpated nmae", "udpated last name"), "Marrakech", rider.getDateOfBirth(), team.getId().value());
+            Rider updatedRider = new Rider(rider.getId(), dto.name(), dto.nationality(), dto.dateOfBirth(), team);
+
+            when(riderRepository.findById(any(RiderId.class))).thenReturn(Optional.of(rider));
+            when(teamRepository.findById(any(TeamId.class))).thenReturn(Optional.of(team));
+            doAnswer(invocation -> {
+                Rider r = invocation.getArgument(1);
+                r.setName(dto.name())
+                        .setNationality(dto.nationality())
+                        .setDateOfBirth(dto.dateOfBirth());
+                return null;
+            }).when(mapper).map(eq(dto), any(Rider.class));
+            when(riderRepository.save(any(Rider.class))).thenReturn(updatedRider);
+            when(mapper.map(any(Rider.class), eq(RiderResponseDto.class)))
+                    .thenReturn(new RiderResponseDto(updatedRider.getId(), updatedRider.getName(),updatedRider.getNationality(), updatedRider.getDateOfBirth(), null));
+
+            RiderResponseDto actual = sut.update(rider.getId(), dto);
+
+            assertEquals(rider.getId(), actual.id());
+            assertEquals(rider.getName(), actual.name());
+            verify(riderRepository).findById(any(RiderId.class));
+
         }
     }
 }
