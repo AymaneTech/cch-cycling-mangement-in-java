@@ -36,4 +36,11 @@ public class StageResult {
     @MapsId("stageId")
     @ManyToOne
     private Stage stage;
+
+    public StageResult(Rider rider, Stage stage, Duration duration) {
+        this.id = new StageResultId(stage.getId(), rider.getId());
+        this.rider = rider;
+        this.stage = stage;
+        this.duration = duration;
+    }
 }
