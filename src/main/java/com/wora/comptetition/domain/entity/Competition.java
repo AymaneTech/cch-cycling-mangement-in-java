@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@Accessors(chain = true)
 @NoArgsConstructor
 public class Competition {
 
@@ -27,7 +29,6 @@ public class Competition {
     @Column(unique = true)
     private String name;
 
-    @Size(min = 4, max = 4)
     @Column(name = "start_date")
     private LocalDate startDate;
 
