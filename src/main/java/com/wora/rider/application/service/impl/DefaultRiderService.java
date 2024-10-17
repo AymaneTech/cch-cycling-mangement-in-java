@@ -10,13 +10,17 @@ import com.wora.rider.domain.repository.RiderRepository;
 import com.wora.rider.domain.repository.TeamRepository;
 import com.wora.rider.domain.valueObject.RiderId;
 import com.wora.rider.domain.valueObject.TeamId;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
 @Service
+@Transactional
+@Validated
 @RequiredArgsConstructor
 public class DefaultRiderService implements RiderService {
     private final RiderRepository repository;
@@ -45,17 +49,28 @@ public class DefaultRiderService implements RiderService {
         final Rider mappedRider = mapper.map(dto, Rider.class)
                 .setTeam(team);
         final Rider savedRider = repository.save(mappedRider);
-        return mapper.map(savedRider, RiderResponseDto.class);
+        return toResponseDto(savedRider);
     }
 
     @Override
     public RiderResponseDto update(RiderId id, RiderRequestDto dto) {
-        return null;
+        final Rider rider = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id));
+        final Team team = teamRepository.findById(new TeamId(dto.teamId()))
+                .orElseThrow(() -> new EntityNotFoundException(id));
+        mapper.map(dto, rider);
+        rider.setTeam(team);
+
+        Rider savedRider = repository.save(rider);
+        return toResponseDto(savedRider);
     }
 
     @Override
     public void delete(RiderId id) {
+        if(! repository.existsById(id))
+            throw new EntityNotFoundException(id);
 
+        repository.softDeleteById(id);
     }
 
     private RiderResponseDto toResponseDto(Rider rider) {

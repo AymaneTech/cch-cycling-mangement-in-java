@@ -7,13 +7,17 @@ import com.wora.rider.application.service.TeamService;
 import com.wora.rider.domain.entity.Team;
 import com.wora.rider.domain.repository.TeamRepository;
 import com.wora.rider.domain.valueObject.TeamId;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
 @Service
+@Transactional
+@Validated
 @RequiredArgsConstructor
 public class DefaultTeamService implements TeamService {
 
@@ -57,7 +61,7 @@ public class DefaultTeamService implements TeamService {
         if (!repository.existsById(id))
             throw new EntityNotFoundException(id);
 
-        repository.softDelete(id);
+        repository.softDeleteById(id);
     }
 
     private TeamResponseDto toResponseDto(Team team) {
