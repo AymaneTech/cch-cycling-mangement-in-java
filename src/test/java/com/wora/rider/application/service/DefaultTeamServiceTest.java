@@ -212,7 +212,7 @@ class DefaultTeamServiceTest {
 
             sut.delete(teamId);
 
-            verify(teamRepository).softDelete(eq(teamId));
+            verify(teamRepository).softDeleteById(eq(teamId));
         }
 
         @DisplayName("Should Throw Entity Not Found Exception When Given Not Existing Id")
