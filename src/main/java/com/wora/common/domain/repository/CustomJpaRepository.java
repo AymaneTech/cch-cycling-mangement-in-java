@@ -13,16 +13,16 @@ import java.util.Optional;
 @NoRepositoryBean
 public interface CustomJpaRepository<T, ID> extends JpaRepository<T, ID> {
 
-    @Query("SELECT e FROM #{#entityName} e WHERE e.deletedAt IS NULL")
+    @Query("SELECT e FROM #{#entityName} e WHERE e.timestamp.deletedAt IS NULL")
     List<T> findAll();
 
     @Query("SELECT e FROM #{#entityName} e")
     List<T> findAllWithTrashed();
 
-    @Query("SELECT e FROM #{#entityName} e WHERE e.deletedAt IS NOT NULL")
+    @Query("SELECT e FROM #{#entityName} e WHERE e.timestamp.deletedAt IS NOT NULL")
     List<T> findAllDeleted();
 
-    @Query("SELECT e FROM #{#entityName} e WHERE e.id = :id AND e.deletedAt IS NULL")
+    @Query("SELECT e FROM #{#entityName} e WHERE e.id = :id AND e.timestamp.deletedAt IS NULL")
     Optional<T> findById(@Param("id") ID id);
 
     @Query("SELECT e FROM #{#entityName} e WHERE e.id = :id")
@@ -30,6 +30,6 @@ public interface CustomJpaRepository<T, ID> extends JpaRepository<T, ID> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE #{#entityName} e SET e.deletedAt = CURRENT_TIMESTAMP WHERE e.id = :id")
+    @Query("UPDATE #{#entityName} e SET e.timestamp.deletedAt = CURRENT_TIMESTAMP WHERE e.id = :id")
     void softDeleteById(ID id);
 }
