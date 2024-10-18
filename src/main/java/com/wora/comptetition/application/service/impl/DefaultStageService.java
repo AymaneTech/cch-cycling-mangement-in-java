@@ -69,7 +69,7 @@ public class DefaultStageService implements StageService {
         if (!repository.existsById(id))
             throw new EntityNotFoundException(id);
 
-        repository.softDeleteById(id);
+        repository.deleteById( id);
     }
 
     private StageResponseDto toResponseDto(Stage stage) {

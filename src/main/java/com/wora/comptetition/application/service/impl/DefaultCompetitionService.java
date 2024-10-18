@@ -56,7 +56,7 @@ public class DefaultCompetitionService implements CompetitionService {
     public void delete(CompetitionId id) {
         if (!repository.existsById(id))
             throw new EntityNotFoundException(id);
-        repository.softDeleteById(id);
+        repository.deleteById(id);
     }
 
     private CompetitionResponseDto toResponseDto(Competition competition) {

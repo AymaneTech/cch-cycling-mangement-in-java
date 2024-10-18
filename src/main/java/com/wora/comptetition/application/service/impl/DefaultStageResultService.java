@@ -33,7 +33,7 @@ public class DefaultStageResultService implements StageResultService {
         final Stage stage = stageRepository.findById(dto.stageId())
                 .orElseThrow(() -> new EntityNotFoundException(dto.stageId()));
 
-        StageResult savedResult = stageResultRepository.save(new StageResult(rider, stage, dto.duration()));
+        final StageResult savedResult = stageResultRepository.save(new StageResult(rider, stage, dto.duration()));
         return mapper.map(savedResult, PassedStageResponseDto.class);
     }
 }

@@ -21,8 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DefaultTeamService implements TeamService {
 
-    private final TeamRepository repository;
     private final ModelMapper mapper;
+    private final TeamRepository repository;
 
     @Override
     public List<TeamResponseDto> findAll() {
@@ -60,7 +60,7 @@ public class DefaultTeamService implements TeamService {
         if (!repository.existsById(id))
             throw new EntityNotFoundException(id);
 
-        repository.softDeleteById(id);
+        repository.deleteById(id);
     }
 
     private TeamResponseDto toResponseDto(Team team) {
