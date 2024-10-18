@@ -1,5 +1,6 @@
 package com.wora.comptetition.domain.entity;
 
+import com.wora.common.domain.valueObject.Timestamp;
 import com.wora.comptetition.domain.valueObject.StageResultId;
 import com.wora.rider.domain.entity.Rider;
 import jakarta.persistence.*;
@@ -36,6 +37,9 @@ public class StageResult {
     @MapsId("stageId")
     @ManyToOne
     private Stage stage;
+
+     @Embedded
+    private Timestamp timestamp;
 
     public StageResult(Rider rider, Stage stage, Duration duration) {
         this.id = new StageResultId(stage.getId(), rider.getId());

@@ -1,5 +1,6 @@
 package com.wora.rider.domain.entity;
 
+import com.wora.common.domain.valueObject.Timestamp;
 import com.wora.rider.domain.valueObject.TeamId;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -34,6 +35,9 @@ public class Team {
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
     private List<Rider> riders;
+
+    @Embedded
+    private Timestamp timestamp;
 
     public Team(TeamId id, String name, String country) {
         this.id = id;

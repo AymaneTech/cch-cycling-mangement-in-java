@@ -1,5 +1,6 @@
 package com.wora.comptetition.domain.entity;
 
+import com.wora.common.domain.valueObject.Timestamp;
 import com.wora.comptetition.domain.valueObject.CompetitionId;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -41,4 +42,7 @@ public class Competition {
 
     @OneToMany(mappedBy = "competition")
     private List<GeneralResult> generalResults;
+
+    @Embedded
+    private Timestamp timestamp;
 }

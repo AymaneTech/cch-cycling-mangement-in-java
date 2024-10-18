@@ -1,5 +1,6 @@
 package com.wora.rider.domain.entity;
 
+import com.wora.common.domain.valueObject.Timestamp;
 import com.wora.comptetition.domain.entity.GeneralResult;
 import com.wora.comptetition.domain.entity.StageResult;
 import com.wora.rider.domain.valueObject.Name;
@@ -45,6 +46,9 @@ public class Rider {
 
     @OneToMany(mappedBy = "rider")
     private List<GeneralResult> generalResults;
+
+    @Embedded
+    private Timestamp timestamp;
 
     public Rider(RiderId id, Name name, String nationality, LocalDate dateOfBirth, Team team) {
         this.id = id;

@@ -1,9 +1,8 @@
 package com.wora.comptetition.domain.entity;
 
-import com.wora.comptetition.domain.valueObject.CompetitionId;
+import com.wora.common.domain.valueObject.Timestamp;
 import com.wora.comptetition.domain.valueObject.GeneralResultId;
 import com.wora.rider.domain.entity.Rider;
-import com.wora.rider.domain.valueObject.RiderId;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +28,9 @@ public class GeneralResult {
     @MapsId("riderId")
     @ManyToOne
     private Rider rider;
+
+    @Embedded
+    private Timestamp timestamp;
 
     public GeneralResult(Competition competition, Rider rider) {
         this.competition = competition;

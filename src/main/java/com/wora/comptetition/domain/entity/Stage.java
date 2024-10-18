@@ -1,5 +1,6 @@
 package com.wora.comptetition.domain.entity;
 
+import com.wora.common.domain.valueObject.Timestamp;
 import com.wora.comptetition.domain.valueObject.StageId;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -44,5 +45,8 @@ public class Stage {
 
     @OneToMany(mappedBy = "stage", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<StageResult> stageResults;
+
+    @Embedded
+    private Timestamp timestamp;
 
 }
