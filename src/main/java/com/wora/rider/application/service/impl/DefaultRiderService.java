@@ -69,7 +69,7 @@ public class DefaultRiderService implements RiderService {
         if(! repository.existsById(id))
             throw new EntityNotFoundException(id);
 
-        repository.deleteById(id);
+        repository.softDeleteById(id);
     }
 
     private RiderResponseDto toResponseDto(Rider rider) {

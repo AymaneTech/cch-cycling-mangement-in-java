@@ -7,7 +7,10 @@ import com.wora.rider.application.service.impl.DefaultTeamService;
 import com.wora.rider.domain.entity.Team;
 import com.wora.rider.domain.repository.TeamRepository;
 import com.wora.rider.domain.valueObject.TeamId;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -189,11 +192,12 @@ class DefaultTeamServiceTest {
         @Test
         void update_ShouldThrowEntityNotFoundException_WhenGivenNotExistingId() {
             TeamId teamId = new TeamId();
+            TeamRequestDto dto = new TeamRequestDto("new name", "new country");
 
             when(teamRepository.findById(eq(teamId)))
                     .thenReturn(Optional.empty());
 
-            assertThrows(EntityNotFoundException.class, () -> sut.findById(teamId));
+            assertThrows(EntityNotFoundException.class, () -> sut.update(teamId, dto));
         }
     }
 

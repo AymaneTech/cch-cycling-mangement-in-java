@@ -12,7 +12,10 @@ import com.wora.rider.domain.repository.TeamRepository;
 import com.wora.rider.domain.valueObject.Name;
 import com.wora.rider.domain.valueObject.RiderId;
 import com.wora.rider.domain.valueObject.TeamId;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -171,10 +174,16 @@ class DefaultRiderServiceTest {
     @DisplayName("update() method tests")
     @Nested
     class UpdateTests {
+        private RiderRequestDto dto;
+
+        @BeforeEach
+        void setup() {
+            dto = new RiderRequestDto(new Name("udpated name", "udpated last name"), "Marrakech", rider.getDateOfBirth(), team.getId().value());
+        }
+
         @DisplayName("Should return updated rider when given existing id")
         @Test
         void update_ShouldReturnUpdatedRiderWhenGivenExistingId() {
-            RiderRequestDto dto = new RiderRequestDto(new Name("udpated nmae", "udpated last name"), "Marrakech", rider.getDateOfBirth(), team.getId().value());
             Rider updatedRider = new Rider(rider.getId(), dto.name(), dto.nationality(), dto.dateOfBirth(), team);
 
             when(riderRepository.findById(any(RiderId.class))).thenReturn(Optional.of(rider));
@@ -194,7 +203,46 @@ class DefaultRiderServiceTest {
             assertEquals(rider.getId(), actual.id());
             assertEquals(rider.getName(), actual.name());
             verify(riderRepository).findById(any(RiderId.class));
+        }
 
+        @DisplayName("Should throw entity not found exception when given not existing id")
+        @Test
+        void udpate_ShouldThrowEntityNotFoundException_WhenGivenNotExistingId() {
+            when(riderRepository.findById(any(RiderId.class))).thenReturn(Optional.empty());
+
+            assertThrows(EntityNotFoundException.class, () -> sut.findById(new RiderId()));
+        }
+
+        @DisplayName("Should throw entity not found exception when given not existing team id")
+        @Test
+        void update_ShouldThrowEntityNotFoundException_WhenGivenNotExistingTeamId() {
+            when(riderRepository.findById(any(RiderId.class))).thenReturn(Optional.of(rider));
+            when(teamRepository.findById(any(TeamId.class))).thenReturn(Optional.empty());
+
+            assertThrows(EntityNotFoundException.class, () -> sut.update(new RiderId(), dto));
+        }
+    }
+
+    @DisplayName("delete() method tests")
+    @Nested
+    class DeleteTests {
+        @DisplayName("Should throw entity not found exception")
+        @Test
+        void delete_ShouldThrowEntityNotFoundException_WhenGivenNotExistingId() {
+            when(riderRepository.existsById(any(RiderId.class))).thenReturn(false);
+
+            assertThrows(EntityNotFoundException.class, () -> sut.delete(new RiderId()));
+        }
+
+        @DisplayName("Should delete rider when given existing id")
+        @Test
+        void delete_ShouldDelete_WhenGivenExistingId() {
+            when(riderRepository.existsById(any(RiderId.class))).thenReturn(true);
+
+            sut.delete(new RiderId());
+
+            verify(riderRepository).existsById(any(RiderId.class));
+            verify(riderRepository).softDeleteById(any(RiderId.class));
         }
     }
 }
