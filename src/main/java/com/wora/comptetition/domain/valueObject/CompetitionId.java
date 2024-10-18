@@ -6,4 +6,7 @@ import java.util.UUID;
 
 @Embeddable
 public record CompetitionId(UUID value) {
+    public CompetitionId() {
+        this(UUID.randomUUID());
+    }
 }

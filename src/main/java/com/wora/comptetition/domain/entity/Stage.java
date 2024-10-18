@@ -3,6 +3,7 @@ package com.wora.comptetition.domain.entity;
 import com.wora.common.domain.valueObject.Timestamp;
 import com.wora.comptetition.domain.valueObject.StageId;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
@@ -38,6 +39,8 @@ public class Stage {
 
     private String endLocation;
 
+    @Future
+    @NotNull
     private LocalDate date;
 
     @ManyToOne

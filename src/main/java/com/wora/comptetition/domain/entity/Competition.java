@@ -3,6 +3,7 @@ package com.wora.comptetition.domain.entity;
 import com.wora.common.domain.valueObject.Timestamp;
 import com.wora.comptetition.domain.valueObject.CompetitionId;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -30,10 +31,11 @@ public class Competition {
     @Column(unique = true)
     private String name;
 
+    @Future
     @Column(name = "start_date")
     private LocalDate startDate;
 
-    @Size(min = 4, max = 4)
+    @Future
     @Column(name = "end_date")
     private LocalDate endDate;
 
@@ -45,4 +47,18 @@ public class Competition {
 
     @Embedded
     private Timestamp timestamp;
+
+    public Competition(CompetitionId id, String name, LocalDate startDate, LocalDate endDate){
+        this.id = id;
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public Competition(String name, LocalDate startDate, LocalDate endDate){
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
 }

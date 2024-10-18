@@ -7,7 +7,6 @@ import com.wora.comptetition.application.dto.response.SubscribeToCompetitionResp
 import com.wora.comptetition.domain.entity.GeneralResult;
 import com.wora.comptetition.domain.entity.StageResult;
 import com.wora.rider.application.dto.request.RiderRequestDto;
-import com.wora.rider.application.dto.request.TeamRequestDto;
 import com.wora.rider.application.dto.response.RiderResponseDto;
 import com.wora.rider.application.dto.response.TeamResponseDto;
 import com.wora.rider.domain.entity.Rider;
