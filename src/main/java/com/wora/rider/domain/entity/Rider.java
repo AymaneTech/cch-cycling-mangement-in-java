@@ -57,4 +57,11 @@ public class Rider {
         this.dateOfBirth = dateOfBirth;
         this.team = team;
     }
+
+    public Rider(Name name, String nationality, LocalDate dateOfBirth, Team team) {
+        this.name = name;
+        this.nationality = nationality;
+        this.dateOfBirth = dateOfBirth;
+        this.team = team;
+    }
 }
