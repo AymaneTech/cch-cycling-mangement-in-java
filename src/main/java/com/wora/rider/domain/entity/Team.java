@@ -40,7 +40,11 @@ public class Team {
     private Timestamp timestamp;
 
     public Team(TeamId id, String name, String country) {
+        this(name, country);
         this.id = id;
+    }
+
+    public Team(String name, String country) {
         this.name = name;
         this.country = country;
     }

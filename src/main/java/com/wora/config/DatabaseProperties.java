@@ -29,8 +29,6 @@ public class DatabaseProperties {
             @Value("${app.database.hibernate.format-sql}") Boolean hibernateFormatSql
     ) {
 
-        System.out.println("here here here ");
-        System.out.println(url);
         this.url = url;
         this.username = username;
         this.password = password;
