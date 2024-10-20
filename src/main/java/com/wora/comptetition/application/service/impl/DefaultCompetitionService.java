@@ -23,7 +23,6 @@ public class DefaultCompetitionService implements CompetitionService {
     private final CompetitionRepository repository;
     private final ModelMapper mapper;
 
-
     @Override
     public List<CompetitionResponseDto> findAll() {
         return repository.findAll()
@@ -56,7 +55,7 @@ public class DefaultCompetitionService implements CompetitionService {
     public void delete(CompetitionId id) {
         if (!repository.existsById(id))
             throw new EntityNotFoundException(id);
-        repository.deleteById(id);
+        repository.softDeleteById(id);
     }
 
     private CompetitionResponseDto toResponseDto(Competition competition) {

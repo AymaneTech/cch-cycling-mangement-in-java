@@ -121,16 +121,80 @@ class DefaultCompetitionServiceTest {
             CompetitionRequestDto expected = new CompetitionRequestDto("maroc ", LocalDate.now().plusMonths(2), LocalDate.now().plusMonths(3));
             Competition competition = new Competition(new CompetitionId(), expected.name(), expected.startDate(), expected.endDate());
 
-            when(mapper.map(any(CompetitionRequestDto.class), eq(Competition.class))) .thenReturn(competition);
+            when(mapper.map(any(CompetitionRequestDto.class), eq(Competition.class))).thenReturn(competition);
             when(repository.save(any(Competition.class))).thenReturn(competition);
             when(mapper.map(any(Competition.class), eq(CompetitionResponseDto.class)))
-                    .thenReturn(new CompetitionResponseDto(competition.getId(), competition.getName(),competition.getStartDate(), competition.getEndDate()));
+                    .thenReturn(new CompetitionResponseDto(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate()));
 
             CompetitionResponseDto actual = sut.create(expected);
 
             assertEquals(expected.name(), actual.name());
             assertEquals(expected.startDate(), actual.startDate());
             assertTrue(actual.endDate().isAfter(actual.startDate()));
+        }
+    }
+
+    @DisplayName("update() method tests")
+    @Nested
+    class UpdateTests {
+        CompetitionRequestDto dto = new CompetitionRequestDto("competition 1", LocalDate.now(), LocalDate.now().plusMonths(1));
+
+        @Test
+        @DisplayName("Should throw entity not found exception when given not existing id")
+        void update_ShouldThrowEntityNotFoundException_WhenGivenNotExistingId() {
+            CompetitionId competitionId = new CompetitionId();
+
+            when(repository.findById(eq(competitionId))).thenReturn(Optional.empty());
+
+            assertThrows(EntityNotFoundException.class, () -> sut.update(competitionId, dto));
+        }
+
+        @Test
+        void update_ShouldReturnUpdatedCompetition_WhenGivenExistingId() {
+            Competition competition = new Competition(new CompetitionId(), "old info", dto.startDate(), dto.endDate());
+
+            when(repository.findById(any(CompetitionId.class))).thenReturn(Optional.of(competition));
+            doAnswer(invocation -> {
+                Competition c = invocation.getArgument(1);
+                c.setName(dto.name())
+                        .setStartDate(dto.startDate())
+                        .setEndDate(dto.endDate());
+                return null;
+
+            }).when(mapper).map(any(CompetitionRequestDto.class), eq(competition));
+            when(mapper.map(any(Competition.class), eq(CompetitionResponseDto.class)))
+                    .thenReturn(new CompetitionResponseDto(competition.getId(), dto.name(), competition.getStartDate(), competition.getEndDate()));
+
+            CompetitionResponseDto actual = sut.update(competition.getId(), dto);
+
+            assertEquals(competition.getName(), actual.name());
+            assertEquals(competition.getStartDate(), actual.startDate());
+            assertTrue(actual.startDate().isBefore(actual.endDate()));
+        }
+    }
+
+    @DisplayName("delete() method tests")
+    @Nested
+    class DeleteTests {
+        @Test
+        void delete_ShouldThrowEntityNotFoundException_WhenGivenNotExistingId() {
+            CompetitionId competitionId = new CompetitionId();
+
+            when(repository.existsById(eq(competitionId))).thenReturn(false);
+
+            assertThrows(EntityNotFoundException.class, () -> sut.delete(competitionId));
+        }
+
+        @Test
+        void delete_ShouldDeleteCompetition_WhenGivenExistingId() {
+            CompetitionId competitionId = new CompetitionId();
+
+            when(repository.existsById(eq(competitionId))).thenReturn(true);
+
+            sut.delete(competitionId);
+
+            verify(repository).existsById(eq(competitionId));
+            verify(repository).softDeleteById(eq(competitionId));
         }
     }
 }
