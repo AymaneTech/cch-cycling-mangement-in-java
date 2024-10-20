@@ -134,8 +134,7 @@ class DefaultRiderServiceTest {
             Rider rider = new Rider(new RiderId(), dto.name(), dto.nationality(), dto.dateOfBirth(), new Team());
 
             when(teamRepository.findById(any(TeamId.class))).thenReturn(Optional.of(new Team()));
-            when(mapper.map(any(RiderRequestDto.class), eq(Rider.class)))
-                    .thenReturn(rider);
+            when(mapper.map(any(RiderRequestDto.class), eq(Rider.class))).thenReturn(rider);
             when(riderRepository.save(any(Rider.class))).thenReturn(rider);
             when(mapper.map(any(Rider.class), eq(RiderResponseDto.class)))
                     .thenAnswer(invocation -> {
