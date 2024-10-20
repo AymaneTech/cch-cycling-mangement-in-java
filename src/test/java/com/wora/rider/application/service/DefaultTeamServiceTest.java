@@ -163,7 +163,6 @@ class DefaultTeamServiceTest {
             Team existingTeam = new Team(teamId, "old name", "old country");
 
             when(teamRepository.findById(teamId)).thenReturn(Optional.of(existingTeam));
-
             doAnswer(invocation -> {
                 Team team = invocation.getArgument(1);
                 team.setName(dto.name())

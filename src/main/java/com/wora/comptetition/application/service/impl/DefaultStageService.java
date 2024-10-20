@@ -8,6 +8,7 @@ import com.wora.comptetition.domain.entity.Competition;
 import com.wora.comptetition.domain.entity.Stage;
 import com.wora.comptetition.domain.repository.CompetitionRepository;
 import com.wora.comptetition.domain.repository.StageRepository;
+import com.wora.comptetition.domain.valueObject.CompetitionId;
 import com.wora.comptetition.domain.valueObject.StageId;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,13 @@ public class DefaultStageService implements StageService {
     @Override
     public List<StageResponseDto> findAll() {
         return repository.findAll()
+                .stream().map(this::toResponseDto)
+                .toList();
+    }
+
+    @Override
+    public List<StageResponseDto> findAllByCompetitionId(CompetitionId competitionId) {
+        return repository.findAllByCompetitionId(competitionId)
                 .stream().map(this::toResponseDto)
                 .toList();
     }
@@ -69,7 +77,7 @@ public class DefaultStageService implements StageService {
         if (!repository.existsById(id))
             throw new EntityNotFoundException(id);
 
-        repository.deleteById( id);
+        repository.deleteById(id);
     }
 
     private StageResponseDto toResponseDto(Stage stage) {
