@@ -22,8 +22,8 @@ import org.springframework.validation.annotation.Validated;
 @RequiredArgsConstructor
 public class DefaultStageResultService implements StageResultService {
     private final StageResultRepository stageResultRepository;
-    private final StageRepository stageRepository;
     private final RiderRepository riderRepository;
+    private final StageRepository stageRepository;
     private final ModelMapper mapper;
 
     @Override
