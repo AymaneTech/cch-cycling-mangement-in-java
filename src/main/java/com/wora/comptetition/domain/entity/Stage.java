@@ -56,10 +56,6 @@ public class Stage {
     @Embedded
     private Timestamp timestamp;
 
-    public Stage(){
-
-    }
-
     public Stage(Integer stageNumber, Double distance, String startLocation, String endLocation, LocalDate date, Competition competition){
         this.stageNumber = stageNumber;
         this.distance = distance;
