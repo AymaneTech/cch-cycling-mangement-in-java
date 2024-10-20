@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -34,7 +35,7 @@ public class Team {
     private String country;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
-    private List<Rider> riders;
+    private List<Rider> riders = new ArrayList<>();
 
     @Embedded
     private Timestamp timestamp;

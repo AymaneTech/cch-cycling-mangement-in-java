@@ -2,6 +2,7 @@ package com.wora.rider.application.service.impl;
 
 import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.rider.application.dto.request.TeamRequestDto;
+import com.wora.rider.application.dto.response.RiderResponseDto;
 import com.wora.rider.application.dto.response.TeamResponseDto;
 import com.wora.rider.application.service.TeamService;
 import com.wora.rider.domain.entity.Team;
@@ -41,8 +42,11 @@ public class DefaultTeamService implements TeamService {
 
     @Override
     public TeamResponseDto create(TeamRequestDto dto) {
+        System.out.println("here here");
+        System.out.println(dto);
         Team savedTeam = repository.save(mapper.map(dto, Team.class));
-        return mapper.map(savedTeam, TeamResponseDto.class);
+        System.out.println(savedTeam);
+        return toResponseDto(savedTeam);
     }
 
     @Override
@@ -64,6 +68,13 @@ public class DefaultTeamService implements TeamService {
     }
 
     private TeamResponseDto toResponseDto(Team team) {
-        return mapper.map(team, TeamResponseDto.class);
+        return new TeamResponseDto(
+                team.getId(),
+                team.getName(),
+                team.getCountry(),
+                team.getRiders().stream().map(r ->
+                                new RiderResponseDto(r.getId(), r.getName(), r.getNationality(), r.getDateOfBirth(), null))
+                        .toList()
+        );
     }
 }
