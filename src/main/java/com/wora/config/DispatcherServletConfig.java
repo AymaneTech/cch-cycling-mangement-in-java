@@ -13,6 +13,7 @@ public class DispatcherServletConfig implements WebApplicationInitializer {
     public void onStartup(ServletContext servletContext) throws ServletException {
         AnnotationConfigWebApplicationContext webApplicationContext = new AnnotationConfigWebApplicationContext();
         webApplicationContext.register(ApplicationConfig.class);
+
         DispatcherServlet dispatcherServlet = new DispatcherServlet(webApplicationContext);
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", dispatcherServlet);
         dispatcher.addMapping("/");
