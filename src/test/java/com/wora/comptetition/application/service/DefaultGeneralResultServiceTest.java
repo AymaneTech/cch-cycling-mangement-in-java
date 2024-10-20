@@ -53,7 +53,6 @@ class DefaultGeneralResultServiceTest {
     void setup() {
         sut = new DefaultGeneralResultService(repository, riderRepository, competitionRepository, mapper);
         dto = new SubscribeToCompetitionRequestDto(new CompetitionId(), new RiderId());
-
     }
 
     @Test
