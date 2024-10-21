@@ -5,18 +5,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
+import java.util.List;
 
-public record CompetitionResponseDto(
-        @NotNull
-        CompetitionId id,
-
-        @NotBlank
-        String name,
-
-        @NotNull
-        LocalDate startDate,
-
-        @NotNull
-        LocalDate endDate
-) {
+public record CompetitionResponseDto(@NotNull CompetitionId id,
+                                     @NotBlank String name,
+                                     @NotNull LocalDate startDate,
+                                     @NotNull LocalDate endDate,
+                                     @NotNull List<EmbeddableStage> stages
+                                     ) {
 }
