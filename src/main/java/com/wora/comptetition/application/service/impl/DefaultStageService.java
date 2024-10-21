@@ -53,11 +53,19 @@ public class DefaultStageService implements StageService {
         final Competition competition = competitionRepository.findById(new CompetitionId(dto.competitionId()))
                 .orElseThrow(() -> new EntityNotFoundException(dto.competitionId()));
 
-        final Stage mappedStage = mapper.map(dto, Stage.class)
-                .setCompetition(competition);
-
+        Stage mappedStage = mapToEntity(dto, competition);
         Stage savedStage = repository.save(mappedStage);
         return mapper.map(savedStage, StageResponseDto.class);
+    }
+
+    @Override
+    public List<StageResponseDto> saveAll(List<StageRequestDto> stageRequestDtos, Competition competition) {
+        final List<Stage> stages = stageRequestDtos.stream()
+                .map(s -> mapToEntity(s, competition))
+                .toList();
+        return repository.saveAll(stages)
+                .stream().map(this::toResponseDto)
+                .toList();
     }
 
     @Override
@@ -82,5 +90,10 @@ public class DefaultStageService implements StageService {
 
     private StageResponseDto toResponseDto(Stage stage) {
         return mapper.map(stage, StageResponseDto.class);
+    }
+
+    private Stage mapToEntity(StageRequestDto dto, Competition competition) {
+        return mapper.map(dto, Stage.class)
+                .setCompetition(competition);
     }
 }

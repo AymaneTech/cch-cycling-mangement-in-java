@@ -4,6 +4,7 @@ import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.comptetition.application.dto.request.CompetitionRequestDto;
 import com.wora.comptetition.application.dto.response.CompetitionResponseDto;
 import com.wora.comptetition.application.service.CompetitionService;
+import com.wora.comptetition.application.service.StageValidatorService;
 import com.wora.comptetition.domain.entity.Competition;
 import com.wora.comptetition.domain.repository.CompetitionRepository;
 import com.wora.comptetition.domain.valueObject.CompetitionId;
@@ -21,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DefaultCompetitionService implements CompetitionService {
     private final CompetitionRepository repository;
+    private final StageValidatorService stageValidatorService;
     private final ModelMapper mapper;
 
     @Override
@@ -39,7 +41,10 @@ public class DefaultCompetitionService implements CompetitionService {
 
     @Override
     public CompetitionResponseDto create(CompetitionRequestDto dto) {
-        final Competition competition = repository.save(mapper.map(dto, Competition.class));
+        Competition mappedCompetition = mapper.map(dto, Competition.class);
+        mappedCompetition.setStages(stageValidatorService.validateAndGetStages(dto.stages()));
+
+        final Competition competition = repository.save(mappedCompetition);
         return toResponseDto(competition);
     }
 
