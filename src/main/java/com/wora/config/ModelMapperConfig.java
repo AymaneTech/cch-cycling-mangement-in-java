@@ -1,9 +1,6 @@
 package com.wora.config;
 
-import com.wora.comptetition.application.dto.response.CompetitionResponseDto;
-import com.wora.comptetition.application.dto.response.PassedStageResponseDto;
-import com.wora.comptetition.application.dto.response.StageResponseDto;
-import com.wora.comptetition.application.dto.response.SubscribeToCompetitionResponseDto;
+import com.wora.comptetition.application.dto.response.*;
 import com.wora.comptetition.domain.entity.Competition;
 import com.wora.comptetition.domain.entity.GeneralResult;
 import com.wora.comptetition.domain.entity.Stage;
@@ -56,7 +53,11 @@ public class ModelMapperConfig {
             return new CompetitionResponseDto(competition.getId(),
                     competition.getName(),
                     competition.getStartDate(),
-                    competition.getEndDate());
+                    competition.getEndDate(),
+                    competition.getStages()
+                            .stream().map(s -> mapper.map(s, EmbeddableStage.class))
+                            .toList()
+            );
         }, Competition.class, CompetitionResponseDto.class);
 
         mapper.addConverter(context -> {
@@ -71,6 +72,18 @@ public class ModelMapperConfig {
                     mapper.map(stage.getCompetition(), CompetitionResponseDto.class)
             );
         }, Stage.class, StageResponseDto.class);
+
+        mapper.addConverter(context -> {
+            Stage stage = context.getSource();
+            return new EmbeddableStage(
+                    stage.getId(),
+                    stage.getStageNumber(),
+                    stage.getDistance(),
+                    stage.getStartLocation(),
+                    stage.getEndLocation(),
+                    stage.getDate()
+            );
+        }, Stage.class, EmbeddableStage.class);
 
         mapper.addConverter(context -> {
             GeneralResult generalResult = context.getSource();

@@ -32,6 +32,8 @@ class DefaultCompetitionServiceTest {
     @Mock
     private CompetitionRepository repository;
     @Mock
+    private StageValidatorService stageValidatorService;
+    @Mock
     private ModelMapper mapper;
 
     //    @InjectMocks
@@ -39,7 +41,7 @@ class DefaultCompetitionServiceTest {
 
     @BeforeEach
     void setup() {
-        this.sut = new DefaultCompetitionService(repository, mapper);
+        this.sut = new DefaultCompetitionService(repository, stageValidatorService, mapper);
     }
 
     @DisplayName("findAll() tests")
@@ -68,7 +70,7 @@ class DefaultCompetitionServiceTest {
 
             doAnswer(invocation -> {
                 Competition competition = invocation.getArgument(0);
-                return new CompetitionResponseDto(new CompetitionId(), competition.getName(), competition.getStartDate(), competition.getEndDate());
+                return new CompetitionResponseDto(new CompetitionId(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of());
             })
                     .when(mapper).map(any(Competition.class), eq(CompetitionResponseDto.class));
             when(repository.findAll()).thenReturn(expected);
@@ -101,7 +103,7 @@ class DefaultCompetitionServiceTest {
             when(mapper.map(any(Competition.class), eq(CompetitionResponseDto.class)))
                     .thenAnswer(invocation -> {
                         Competition competition = invocation.getArgument(0);
-                        return new CompetitionResponseDto(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate());
+                        return new CompetitionResponseDto(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of());
                     });
 
             CompetitionResponseDto actual = sut.findById(expected.getId());
@@ -118,13 +120,13 @@ class DefaultCompetitionServiceTest {
         @DisplayName("Should return create competition when given valid competition request")
         @Test
         void create_ShouldReturnCreatedCompetition_WhenGivenValidCompetitionRequest() {
-            CompetitionRequestDto expected = new CompetitionRequestDto("maroc ", LocalDate.now().plusMonths(2), LocalDate.now().plusMonths(3));
+            CompetitionRequestDto expected = new CompetitionRequestDto("maroc ", LocalDate.now().plusMonths(2), LocalDate.now().plusMonths(3), List.of());
             Competition competition = new Competition(new CompetitionId(), expected.name(), expected.startDate(), expected.endDate());
 
             when(mapper.map(any(CompetitionRequestDto.class), eq(Competition.class))).thenReturn(competition);
             when(repository.save(any(Competition.class))).thenReturn(competition);
             when(mapper.map(any(Competition.class), eq(CompetitionResponseDto.class)))
-                    .thenReturn(new CompetitionResponseDto(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate()));
+                    .thenReturn(new CompetitionResponseDto(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of()));
 
             CompetitionResponseDto actual = sut.create(expected);
 
@@ -137,7 +139,7 @@ class DefaultCompetitionServiceTest {
     @DisplayName("update() method tests")
     @Nested
     class UpdateTests {
-        CompetitionRequestDto dto = new CompetitionRequestDto("competition 1", LocalDate.now(), LocalDate.now().plusMonths(1));
+        CompetitionRequestDto dto = new CompetitionRequestDto("competition 1", LocalDate.now(), LocalDate.now().plusMonths(1), List.of());
 
         @Test
         @DisplayName("Should throw entity not found exception when given not existing id")
@@ -163,7 +165,7 @@ class DefaultCompetitionServiceTest {
 
             }).when(mapper).map(any(CompetitionRequestDto.class), eq(competition));
             when(mapper.map(any(Competition.class), eq(CompetitionResponseDto.class)))
-                    .thenReturn(new CompetitionResponseDto(competition.getId(), dto.name(), competition.getStartDate(), competition.getEndDate()));
+                    .thenReturn(new CompetitionResponseDto(competition.getId(), dto.name(), competition.getStartDate(), competition.getEndDate(), List.of()));
 
             CompetitionResponseDto actual = sut.update(competition.getId(), dto);
 

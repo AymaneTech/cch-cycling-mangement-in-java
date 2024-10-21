@@ -81,7 +81,7 @@ class DefaultStageServiceTest {
                         return new StageResponseDto(stage.getId(), stage.getStageNumber(), stage.getDistance(),
                                 stage.getStartLocation(), stage.getEndLocation(), stage.getDate(),
                                 new CompetitionResponseDto(competition.getId(), competition.getName(),
-                                        competition.getStartDate(), competition.getEndDate()));
+                                        competition.getStartDate(), competition.getEndDate(), List.of()));
                     });
 
             List<StageResponseDto> actual = sut.findAll();
@@ -109,7 +109,7 @@ class DefaultStageServiceTest {
                         return new StageResponseDto(stage.getId(), stage.getStageNumber(), stage.getDistance(),
                                 stage.getStartLocation(), stage.getEndLocation(), stage.getDate(),
                                 new CompetitionResponseDto(competition.getId(), competition.getName(),
-                                        competition.getStartDate(), competition.getEndDate()));
+                                        competition.getStartDate(), competition.getEndDate(), List.of()));
                     });
 
             List<StageResponseDto> actual = sut.findAllByCompetitionId(competition.getId());
@@ -137,7 +137,7 @@ class DefaultStageServiceTest {
             when(mapper.map(any(Stage.class), eq(StageResponseDto.class)))
                     .thenReturn(new StageResponseDto(stage.getId(), stage.getStageNumber(), stage.getDistance(), stage.getStartLocation(),
                             stage.getEndLocation(), stage.getDate(), new CompetitionResponseDto(competition.getId(), competition.getName(),
-                            competition.getStartDate(), competition.getEndDate())));
+                            competition.getStartDate(), competition.getEndDate(), List.of())));
 
             StageResponseDto actual = sut.findById(stage.getId());
 
@@ -174,7 +174,7 @@ class DefaultStageServiceTest {
                         Stage s = invocation.getArgument(0);
                         return new StageResponseDto(s.getId(), s.getStageNumber(), s.getDistance(), s.getStartLocation(), s.getEndLocation(),
                                 s.getDate(), new CompetitionResponseDto(competition.getId(), competition.getName(),
-                                competition.getStartDate(), competition.getEndDate()));
+                                competition.getStartDate(), competition.getEndDate(), List.of()));
                     });
 
             StageResponseDto actual = sut.create(dto);
@@ -214,7 +214,7 @@ class DefaultStageServiceTest {
             when(mapper.map(any(Stage.class), eq(StageResponseDto.class)))
                     .thenReturn(new StageResponseDto(updatedStage.getId(), updatedStage.getStageNumber(), updatedStage.getDistance(),
                             updatedStage.getStartLocation(), updatedStage.getEndLocation(), updatedStage.getDate(),
-                            new CompetitionResponseDto(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate())));
+                            new CompetitionResponseDto(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of())));
 
             StageResponseDto actual = sut.update(stage.getId(), dto);
 

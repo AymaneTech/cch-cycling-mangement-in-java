@@ -16,7 +16,6 @@ import com.wora.rider.domain.repository.RiderRepository;
 import com.wora.rider.domain.valueObject.Name;
 import com.wora.rider.domain.valueObject.RiderId;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -83,7 +83,7 @@ class DefaultGeneralResultServiceTest {
         when(repository.save(any(GeneralResult.class))).thenReturn(expected);
         when(mapper.map(any(GeneralResult.class), eq(SubscribeToCompetitionResponseDto.class)))
                 .thenReturn(new SubscribeToCompetitionResponseDto(
-                        new CompetitionResponseDto(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate()),
+                        new CompetitionResponseDto(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of()),
                         new RiderResponseDto(rider.getId(), rider.getName(), rider.getNationality(), rider.getDateOfBirth(), null)
                 ));
 
