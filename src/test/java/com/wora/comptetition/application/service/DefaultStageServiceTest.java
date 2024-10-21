@@ -264,7 +264,7 @@ class DefaultStageServiceTest {
             sut.delete(stageId);
 
             verify(repository).existsById(any(StageId.class));
-            verify(repository).softDeleteById(any(StageId.class));
+            verify(repository).deleteById(any(StageId.class));
 
         }
     }

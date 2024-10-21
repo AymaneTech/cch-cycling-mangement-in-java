@@ -62,7 +62,7 @@ public class DefaultTeamService implements TeamService {
         if (!repository.existsById(id))
             throw new EntityNotFoundException(id);
 
-        repository.softDeleteById(id);
+        repository.deleteById(id);
     }
 
     private TeamResponseDto toResponseDto(Team team) {

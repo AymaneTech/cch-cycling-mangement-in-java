@@ -18,7 +18,6 @@ import java.util.Properties;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.wora")
-@ComponentScan("com.wora")
 @EnableTransactionManagement
 @RequiredArgsConstructor
 public class PersistenceConfig {

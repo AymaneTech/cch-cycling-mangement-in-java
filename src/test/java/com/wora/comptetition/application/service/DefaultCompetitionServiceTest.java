@@ -194,7 +194,7 @@ class DefaultCompetitionServiceTest {
             sut.delete(competitionId);
 
             verify(repository).existsById(eq(competitionId));
-            verify(repository).softDeleteById(eq(competitionId));
+            verify(repository).deleteById(eq(competitionId));
         }
     }
 }

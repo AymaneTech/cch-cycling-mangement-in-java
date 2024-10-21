@@ -241,7 +241,7 @@ class DefaultRiderServiceTest {
             sut.delete(new RiderId());
 
             verify(riderRepository).existsById(any(RiderId.class));
-            verify(riderRepository).softDeleteById(any(RiderId.class));
+            verify(riderRepository).deleteById(any(RiderId.class));
         }
     }
 }

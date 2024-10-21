@@ -15,9 +15,6 @@ public record Timestamp(
 
         @UpdateTimestamp
         @Column(name = "updated_at")
-        LocalDateTime updatedAt,
-
-        @Column(name = "deleted_at")
-        LocalDateTime deletedAt
+        LocalDateTime updatedAt
 ) {
 }
