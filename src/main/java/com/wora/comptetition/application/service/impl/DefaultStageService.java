@@ -50,7 +50,7 @@ public class DefaultStageService implements StageService {
 
     @Override
     public StageResponseDto create(StageRequestDto dto) {
-        final Competition competition = competitionRepository.findById(dto.competitionId())
+        final Competition competition = competitionRepository.findById(new CompetitionId(dto.competitionId()))
                 .orElseThrow(() -> new EntityNotFoundException(dto.competitionId()));
 
         final Stage mappedStage = mapper.map(dto, Stage.class)
@@ -64,7 +64,7 @@ public class DefaultStageService implements StageService {
     public StageResponseDto update(StageId id, StageRequestDto dto) {
         final Stage stage = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id));
-        final Competition competition = competitionRepository.findById(dto.competitionId())
+        final Competition competition = competitionRepository.findById(new CompetitionId(dto.competitionId()))
                 .orElseThrow(() -> new EntityNotFoundException(id));
 
         mapper.map(dto, stage);
