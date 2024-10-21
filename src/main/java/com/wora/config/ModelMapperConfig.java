@@ -1,9 +1,13 @@
 package com.wora.config;
 
 import com.wora.comptetition.application.dto.response.CompetitionResponseDto;
+import com.wora.comptetition.application.dto.response.PassedStageResponseDto;
 import com.wora.comptetition.application.dto.response.StageResponseDto;
+import com.wora.comptetition.application.dto.response.SubscribeToCompetitionResponseDto;
 import com.wora.comptetition.domain.entity.Competition;
+import com.wora.comptetition.domain.entity.GeneralResult;
 import com.wora.comptetition.domain.entity.Stage;
+import com.wora.comptetition.domain.entity.StageResult;
 import com.wora.rider.application.dto.response.RiderResponseDto;
 import com.wora.rider.application.dto.response.TeamResponseDto;
 import com.wora.rider.domain.entity.Rider;
@@ -67,6 +71,24 @@ public class ModelMapperConfig {
                     mapper.map(stage.getCompetition(), CompetitionResponseDto.class)
             );
         }, Stage.class, StageResponseDto.class);
+
+        mapper.addConverter(context -> {
+            GeneralResult generalResult = context.getSource();
+            return new SubscribeToCompetitionResponseDto(
+                    mapper.map(generalResult.getCompetition(), CompetitionResponseDto.class),
+                    mapper.map(generalResult.getRider(), RiderResponseDto.class)
+            );
+        }, GeneralResult.class, SubscribeToCompetitionResponseDto.class);
+
+        mapper.addConverter(context -> {
+            StageResult stageResult = context.getSource();
+            return new PassedStageResponseDto(
+                    mapper.map(stageResult.getStage(), StageResponseDto.class),
+                    mapper.map(stageResult.getRider(), RiderResponseDto.class),
+                    stageResult.getDuration(),
+                    stageResult.getPosition()
+            );
+        }, StageResult.class, PassedStageResponseDto.class);
 
         return mapper;
     }
