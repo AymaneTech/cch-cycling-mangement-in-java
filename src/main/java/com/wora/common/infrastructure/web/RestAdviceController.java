@@ -3,7 +3,6 @@ package com.wora.common.infrastructure.web;
 import com.wora.common.domain.ErrorResponse;
 import com.wora.common.domain.exception.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -39,6 +38,18 @@ public class RestAdviceController {
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse entityNotFoundException(final EntityNotFoundException ex, WebRequest request) {
+        return new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                ex.getMessage(),
+                request.getDescription(false),
+                Map.of()
+        );
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse illegalArgumentException(final IllegalArgumentException ex, WebRequest request) {
         return new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 LocalDateTime.now(),
