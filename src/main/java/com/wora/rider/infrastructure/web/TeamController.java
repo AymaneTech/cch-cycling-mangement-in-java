@@ -14,9 +14,10 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/teams")
+@RequestMapping(TeamController.CONTROLLER_PATH)
 @RequiredArgsConstructor
 public class TeamController {
+    public static final String CONTROLLER_PATH = "/api/v1/teams";
     private final TeamService service;
 
     @GetMapping
@@ -48,6 +49,4 @@ public class TeamController {
         service.delete(new TeamId(id));
         return ResponseEntity.noContent().build();
     }
-
-
 }
