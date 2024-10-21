@@ -153,7 +153,7 @@ class DefaultStageServiceTest {
 
         @BeforeEach
         void setup() {
-            dto = new StageRequestDto(23, 202.2, "marrakech", "safi", LocalDate.now(), competition.getId());
+            dto = new StageRequestDto(23, 202.2, "marrakech", "safi", LocalDate.now(), competition.getId().value());
         }
 
         @Test
@@ -191,7 +191,7 @@ class DefaultStageServiceTest {
 
         @BeforeEach
         void setup() {
-            dto = new StageRequestDto(1, 210.5, "Paris", "Marseille", LocalDate.now().plusDays(1), competition.getId());
+            dto = new StageRequestDto(1, 210.5, "Paris", "Marseille", LocalDate.now().plusDays(1), competition.getId().value());
         }
 
         @DisplayName("Should return updated stage when given existing id")

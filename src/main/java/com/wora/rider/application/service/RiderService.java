@@ -6,7 +6,5 @@ import com.wora.rider.application.dto.response.RiderResponseDto;
 import com.wora.rider.domain.entity.Rider;
 import com.wora.rider.domain.valueObject.RiderId;
 
-import java.util.List;
-
 public interface RiderService extends CrudService<Rider, RiderId, RiderRequestDto, RiderResponseDto> {
 }

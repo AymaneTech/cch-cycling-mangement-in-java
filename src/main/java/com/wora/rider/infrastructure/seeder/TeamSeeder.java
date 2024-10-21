@@ -16,13 +16,15 @@ public class TeamSeeder {
     public ApplicationListener<ContextRefreshedEvent> run(TeamRepository teamRepository) {
         return event -> {
             System.out.println("application initialized");
+            if (teamRepository.count() == 0) {
 
-            teamRepository.saveAll(
-                    List.of(
-                            new Team("kacm", "maroc"),
-                            new Team("agadir", "maroc")
-                    )
-            );
+                teamRepository.saveAll(
+                        List.of(
+                                new Team("kacm", "maroc"),
+                                new Team("agadir", "maroc")
+                        )
+                );
+            }
         };
     }
 
