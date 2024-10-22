@@ -1,4 +1,4 @@
-package com.wora.comptetition.application.dto.response;
+package com.wora.comptetition.application.dto.embeddable;
 
 import com.wora.comptetition.domain.valueObject.CompetitionId;
 import jakarta.validation.constraints.NotBlank;

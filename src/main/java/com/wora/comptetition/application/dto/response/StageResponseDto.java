@@ -1,5 +1,6 @@
 package com.wora.comptetition.application.dto.response;
 
+import com.wora.comptetition.application.dto.embeddable.EmbeddableCompetition;
 import com.wora.comptetition.domain.valueObject.StageId;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -1,21 +1,18 @@
 package com.wora.rider.application.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wora.rider.application.dto.embeddable.EmbeddableTeam;
 import com.wora.rider.domain.valueObject.Name;
 import com.wora.rider.domain.valueObject.RiderId;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 
 import java.time.LocalDate;
 
-public record RiderResponseDto(
-        @JsonProperty("id")
-        RiderId id,
-        @JsonProperty("name")
-        Name name,
-        @JsonProperty("nationality")
-        String nationality,
-        @JsonProperty("dateOfBirth")
-        LocalDate dateOfBirth,
-        @JsonProperty("team")
-        TeamResponseDto team
+public record RiderResponseDto(@NotNull RiderId id,
+                               @NotBlank Name name,
+                               @NotBlank String nationality,
+                               @NotNull @Past LocalDate dateOfBirth,
+                               @NotNull EmbeddableTeam team
 ) {
 }

@@ -7,13 +7,9 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public record RiderRequestDto(
-        @NotNull Name name,
-
-        @NotBlank String nationality,
-
-        @NotNull LocalDate dateOfBirth,
-
-        @NotNull UUID teamId
+public record RiderRequestDto(@NotNull Name name,
+                              @NotBlank String nationality,
+                              @NotNull LocalDate dateOfBirth,
+                              @NotNull UUID teamId
 ) {
 }
