@@ -3,6 +3,7 @@ package com.wora.rider.application.service;
 import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.rider.application.dto.request.TeamRequestDto;
 import com.wora.rider.application.dto.response.TeamResponseDto;
+import com.wora.rider.application.mapper.TeamMapper;
 import com.wora.rider.application.service.impl.DefaultTeamService;
 import com.wora.rider.domain.entity.Team;
 import com.wora.rider.domain.repository.TeamRepository;
@@ -14,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +33,7 @@ class DefaultTeamServiceTest {
     private TeamRepository teamRepository;
 
     @Mock
-    private ModelMapper mapper;
+    private TeamMapper mapper;
 
     //    @InjectMocks
     private TeamService sut;
@@ -55,7 +55,7 @@ class DefaultTeamServiceTest {
             );
 
             when(teamRepository.findAll()).thenReturn(excepted);
-            when(mapper.map(any(Team.class), eq(TeamResponseDto.class)))
+            when(mapper.toResponseDto(any(Team.class)))
                     .thenAnswer(invocation -> {
                         Team team = invocation.getArgument(0);
                         return new TeamResponseDto(team.getId(), team.getName(), team.getCountry(), List.of());
@@ -65,7 +65,7 @@ class DefaultTeamServiceTest {
 
             assertEquals(excepted.size(), actual.size());
             verify(teamRepository).findAll();
-            verify(mapper, times(2)).map(any(Team.class), eq(TeamResponseDto.class));
+            verify(mapper, times(2)).toResponseDto(any(Team.class));
         }
 
         @DisplayName("Should return empty list when no teams exists")
@@ -77,7 +77,7 @@ class DefaultTeamServiceTest {
 
             assertEquals(0, actual.size());
             verify(teamRepository).findAll();
-            verify(mapper, never()).map(any(Team.class), eq(TeamResponseDto.class));
+            verify(mapper, never()).toResponseDto(any(Team.class));
         }
     }
 
@@ -90,7 +90,7 @@ class DefaultTeamServiceTest {
             Team expected = new Team(new TeamId(), "real madrid", "spania");
 
             when(teamRepository.findById(any(TeamId.class))).thenReturn(Optional.of(expected));
-            when(mapper.map(any(Team.class), eq(TeamResponseDto.class)))
+            when(mapper.toResponseDto(any(Team.class)))
                     .thenAnswer(invocation -> {
                         Team team = invocation.getArgument(0);
                         return new TeamResponseDto(team.getId(), team.getName(), team.getCountry(), List.of());
@@ -100,7 +100,7 @@ class DefaultTeamServiceTest {
 
             assertNotNull(actual);
             verify(teamRepository).findById(any(TeamId.class));
-            verify(mapper).map(any(Team.class), eq(TeamResponseDto.class));
+            verify(mapper).toResponseDto(any(Team.class));
         }
 
         @DisplayName("Should Throw TeamNotFoundException when given not existing id")
@@ -123,13 +123,13 @@ class DefaultTeamServiceTest {
             TeamRequestDto dto = new TeamRequestDto("marrakech", "morocco");
             Team expected = new Team(new TeamId(), dto.name(), dto.country());
 
-            when(mapper.map(any(TeamRequestDto.class), eq(Team.class)))
+            when(mapper.toEntity(any(TeamRequestDto.class)))
                     .thenReturn(expected);
 
             when(teamRepository.save(any(Team.class)))
                     .thenReturn(expected);
 
-            when(mapper.map(any(Team.class), eq(TeamResponseDto.class)))
+            when(mapper.toResponseDto(any(Team.class)))
                     .thenReturn(new TeamResponseDto(expected.getId(), expected.getName(), expected.getCountry(), List.of()));
 
             TeamResponseDto actual = sut.create(dto);
@@ -163,14 +163,8 @@ class DefaultTeamServiceTest {
             Team existingTeam = new Team(teamId, "old name", "old country");
 
             when(teamRepository.findById(teamId)).thenReturn(Optional.of(existingTeam));
-            doAnswer(invocation -> {
-                Team team = invocation.getArgument(1);
-                team.setName(dto.name())
-                        .setCountry(dto.country());
-                return null;
-            }).when(mapper).map(eq(dto), any(Team.class));
 
-            when(mapper.map(existingTeam, TeamResponseDto.class)).thenReturn(
+            when(mapper.toResponseDto(existingTeam)).thenReturn(
                     new TeamResponseDto(teamId, dto.name(), dto.country(), List.of())
             );
 
@@ -181,8 +175,6 @@ class DefaultTeamServiceTest {
             assertEquals(dto.country(), actual.country());
 
             verify(teamRepository).findById(teamId);
-            verify(mapper).map(eq(dto), any(Team.class));
-            verify(mapper).map(eq(existingTeam), eq(TeamResponseDto.class));
             verifyNoMoreInteractions(teamRepository);
         }
 

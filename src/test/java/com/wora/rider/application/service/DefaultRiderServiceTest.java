@@ -1,9 +1,10 @@
 package com.wora.rider.application.service;
 
 import com.wora.common.domain.exception.EntityNotFoundException;
+import com.wora.rider.application.dto.embeddable.EmbeddableTeam;
 import com.wora.rider.application.dto.request.RiderRequestDto;
 import com.wora.rider.application.dto.response.RiderResponseDto;
-import com.wora.rider.application.dto.response.TeamResponseDto;
+import com.wora.rider.application.mapper.RiderMapper;
 import com.wora.rider.application.service.impl.DefaultRiderService;
 import com.wora.rider.domain.entity.Rider;
 import com.wora.rider.domain.entity.Team;
@@ -19,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -29,8 +29,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Default Rider Service Test")
@@ -43,7 +43,7 @@ class DefaultRiderServiceTest {
     private TeamRepository teamRepository;
 
     @Mock
-    private ModelMapper mapper;
+    private RiderMapper mapper;
 
     //    @InjectMocks
     private RiderService sut;
@@ -70,12 +70,12 @@ class DefaultRiderServiceTest {
             );
 
             when(riderRepository.findAll()).thenReturn(expected);
-            when(mapper.map(any(Rider.class), eq(RiderResponseDto.class)))
+            when(mapper.toResponseDto(any(Rider.class)))
                     .thenAnswer(invocation -> {
                         Rider rider = invocation.getArgument(0);
                         return new RiderResponseDto(
                                 rider.getId(), rider.getName(), rider.getNationality(), rider.getDateOfBirth(),
-                                new TeamResponseDto(rider.getTeam().getId(), rider.getTeam().getName(), rider.getTeam().getCountry(), List.of()));
+                                new EmbeddableTeam(rider.getTeam().getId(), rider.getTeam().getName(), rider.getTeam().getCountry()));
                     });
 
             List<RiderResponseDto> actual = sut.findAll();
@@ -105,7 +105,7 @@ class DefaultRiderServiceTest {
         @Test
         void findById_ShouldReturnExistingRiderWhenGivenExistingId() {
             when(riderRepository.findById(rider.getId())).thenReturn(Optional.of(rider));
-            when(mapper.map(any(Rider.class), eq(RiderResponseDto.class)))
+            when(mapper.toResponseDto(any(Rider.class)))
                     .thenReturn(new RiderResponseDto(rider.getId(), rider.getName(), rider.getNationality(), rider.getDateOfBirth(), null));
 
             RiderResponseDto actual = sut.findById(rider.getId());
@@ -134,9 +134,9 @@ class DefaultRiderServiceTest {
             Rider rider = new Rider(new RiderId(), dto.name(), dto.nationality(), dto.dateOfBirth(), new Team());
 
             when(teamRepository.findById(any(TeamId.class))).thenReturn(Optional.of(new Team()));
-            when(mapper.map(any(RiderRequestDto.class), eq(Rider.class))).thenReturn(rider);
+            when(mapper.toEntity(any(RiderRequestDto.class))).thenReturn(rider);
             when(riderRepository.save(any(Rider.class))).thenReturn(rider);
-            when(mapper.map(any(Rider.class), eq(RiderResponseDto.class)))
+            when(mapper.toResponseDto(any(Rider.class)))
                     .thenAnswer(invocation -> {
                         Rider r = invocation.getArgument(0);
                         return new RiderResponseDto(r.getId(), r.getName(), r.getNationality(), r.getDateOfBirth(), null);
@@ -164,7 +164,7 @@ class DefaultRiderServiceTest {
         void create_ShouldThrowRuntimeException_WhenRepositoryFailsToSave() {
             RiderRequestDto dto = new RiderRequestDto(new Name("aymane", "el maini"), "morocco", LocalDate.of(2004, 10, 27), UUID.randomUUID());
 
-            lenient().when(teamRepository.findById(any(TeamId.class))).thenReturn(Optional.of(new Team()));
+            when(teamRepository.findById(any(TeamId.class))).thenReturn(Optional.of(new Team()));
 
             assertThrows(RuntimeException.class, () -> sut.create(dto));
         }
@@ -187,14 +187,7 @@ class DefaultRiderServiceTest {
 
             when(riderRepository.findById(any(RiderId.class))).thenReturn(Optional.of(rider));
             when(teamRepository.findById(any(TeamId.class))).thenReturn(Optional.of(team));
-            doAnswer(invocation -> {
-                Rider r = invocation.getArgument(1);
-                r.setName(dto.name())
-                        .setNationality(dto.nationality())
-                        .setDateOfBirth(dto.dateOfBirth());
-                return null;
-            }).when(mapper).map(eq(dto), any(Rider.class));
-            when(mapper.map(any(Rider.class), eq(RiderResponseDto.class)))
+            when(mapper.toResponseDto(any(Rider.class)))
                     .thenReturn(new RiderResponseDto(updatedRider.getId(), updatedRider.getName(), updatedRider.getNationality(), updatedRider.getDateOfBirth(), null));
 
             RiderResponseDto actual = sut.update(rider.getId(), dto);
