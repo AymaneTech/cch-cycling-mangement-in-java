@@ -4,6 +4,7 @@ import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.comptetition.application.dto.request.SubscribeToCompetitionRequestDto;
 import com.wora.comptetition.application.dto.response.CompetitionResponseDto;
 import com.wora.comptetition.application.dto.response.SubscribeToCompetitionResponseDto;
+import com.wora.comptetition.application.mapper.GeneralResultMapper;
 import com.wora.comptetition.application.service.impl.DefaultGeneralResultService;
 import com.wora.comptetition.domain.entity.Competition;
 import com.wora.comptetition.domain.entity.GeneralResult;
@@ -21,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -43,7 +43,7 @@ class DefaultGeneralResultServiceTest {
     @Mock
     private CompetitionRepository competitionRepository;
     @Mock
-    private ModelMapper mapper;
+    private GeneralResultMapper mapper;
 
     private GeneralResultService sut;
     private SubscribeToCompetitionRequestDto dto;
@@ -81,7 +81,7 @@ class DefaultGeneralResultServiceTest {
         when(riderRepository.findById(any(RiderId.class))).thenReturn(Optional.of(rider));
         when(competitionRepository.findById(any(CompetitionId.class))).thenReturn(Optional.of(competition));
         when(repository.save(any(GeneralResult.class))).thenReturn(expected);
-        when(mapper.map(any(GeneralResult.class), eq(SubscribeToCompetitionResponseDto.class)))
+        when(mapper.toResponseDto(any(GeneralResult.class)))
                 .thenReturn(new SubscribeToCompetitionResponseDto(
                         new CompetitionResponseDto(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of()),
                         new RiderResponseDto(rider.getId(), rider.getName(), rider.getNationality(), rider.getDateOfBirth(), null)

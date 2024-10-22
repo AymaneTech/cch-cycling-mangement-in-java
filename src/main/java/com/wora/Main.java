@@ -1,6 +1,5 @@
 package com.wora;
 
-import com.wora.config.ModelMapperConfig;
 import com.wora.config.PersistenceConfig;
 import com.wora.rider.application.dto.request.RiderRequestDto;
 import com.wora.rider.application.dto.request.TeamRequestDto;
@@ -19,7 +18,7 @@ public class Main {
     private static final Logger log = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        try (var context = new AnnotationConfigApplicationContext(PersistenceConfig.class, ModelMapperConfig.class)) {
+        try (var context = new AnnotationConfigApplicationContext(PersistenceConfig.class)) {
             TeamService bean = context.getBean(TeamService.class);
             TeamResponseDto result = bean.create(new TeamRequestDto("kacm", "country"));
             bean.create(new TeamRequestDto("hehehe", "hehehehehe"));

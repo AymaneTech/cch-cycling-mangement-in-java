@@ -3,6 +3,7 @@ package com.wora.comptetition.application.service.impl;
 import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.comptetition.application.dto.request.SubscribeToCompetitionRequestDto;
 import com.wora.comptetition.application.dto.response.SubscribeToCompetitionResponseDto;
+import com.wora.comptetition.application.mapper.GeneralResultMapper;
 import com.wora.comptetition.application.service.GeneralResultService;
 import com.wora.comptetition.domain.entity.Competition;
 import com.wora.comptetition.domain.entity.GeneralResult;
@@ -12,7 +13,6 @@ import com.wora.rider.domain.entity.Rider;
 import com.wora.rider.domain.repository.RiderRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -24,7 +24,7 @@ public class DefaultGeneralResultService implements GeneralResultService {
     private final GeneralResultRepository repository;
     private final RiderRepository riderRepository;
     private final CompetitionRepository competitionRepository;
-    private final ModelMapper mapper;
+    private final GeneralResultMapper mapper;
 
     @Override
     public SubscribeToCompetitionResponseDto subscribeToCompetition(SubscribeToCompetitionRequestDto dto) {
@@ -35,6 +35,6 @@ public class DefaultGeneralResultService implements GeneralResultService {
 
         GeneralResult generalResult = new GeneralResult(competition, rider);
         GeneralResult savedResult = repository.save(generalResult);
-        return mapper.map(savedResult, SubscribeToCompetitionResponseDto.class);
+        return mapper.toResponseDto(savedResult);
     }
 }
