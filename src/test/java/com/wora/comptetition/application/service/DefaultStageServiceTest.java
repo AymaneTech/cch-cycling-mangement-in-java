@@ -4,6 +4,7 @@ import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.comptetition.application.dto.embeddable.EmbeddableCompetition;
 import com.wora.comptetition.application.dto.request.StageRequestDto;
 import com.wora.comptetition.application.dto.response.StageResponseDto;
+import com.wora.comptetition.application.mapper.StageMapper;
 import com.wora.comptetition.application.service.impl.DefaultStageService;
 import com.wora.comptetition.domain.entity.Competition;
 import com.wora.comptetition.domain.entity.Stage;
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -27,8 +27,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Default stage service")
@@ -41,7 +41,7 @@ class DefaultStageServiceTest {
     @Mock
     private StageValidatorService stageValidatorService;
     @Mock
-    private ModelMapper mapper;
+    private StageMapper mapper;
 
     private StageService sut;
 
@@ -77,7 +77,7 @@ class DefaultStageServiceTest {
             );
 
             when(repository.findAll()).thenReturn(expected);
-            when(mapper.map(any(Stage.class), eq(StageResponseDto.class)))
+            when(mapper.toResponseDto(any(Stage.class)))
                     .thenAnswer(invocation -> {
                         Stage stage = invocation.getArgument(0);
                         return new StageResponseDto(stage.getId(), stage.getStageNumber(), stage.getDistance(),
@@ -105,7 +105,7 @@ class DefaultStageServiceTest {
             );
 
             when(repository.findAllByCompetitionId(any(CompetitionId.class))).thenReturn(expected);
-            when(mapper.map(any(Stage.class), eq(StageResponseDto.class)))
+            when(mapper.toResponseDto(any(Stage.class)))
                     .thenAnswer(invocation -> {
                         Stage stage = invocation.getArgument(0);
                         return new StageResponseDto(stage.getId(), stage.getStageNumber(), stage.getDistance(),
@@ -136,7 +136,7 @@ class DefaultStageServiceTest {
         @Test
         void findById_ShouldReturnExistingRiderWhenGivenExistingId() {
             when(repository.findById(stage.getId())).thenReturn(Optional.of(stage));
-            when(mapper.map(any(Stage.class), eq(StageResponseDto.class)))
+            when(mapper.toResponseDto(any(Stage.class)))
                     .thenReturn(new StageResponseDto(stage.getId(), stage.getStageNumber(), stage.getDistance(), stage.getStartLocation(),
                             stage.getEndLocation(), stage.getDate(), new EmbeddableCompetition(competition.getId(), competition.getName(),
                             competition.getStartDate(), competition.getEndDate())));
@@ -169,9 +169,9 @@ class DefaultStageServiceTest {
         @Test
         void create_ShouldReturnCreatedStage_WhenGivenValidRequest() {
             when(competitionRepository.findById(any(CompetitionId.class))).thenReturn(Optional.of(competition));
-            when(mapper.map(any(StageRequestDto.class), eq(Stage.class))).thenReturn(stage);
+            when(mapper.toEntity(any(StageRequestDto.class))).thenReturn(stage);
             when(repository.save(any(Stage.class))).thenReturn(stage);
-            when(mapper.map(any(Stage.class), eq(StageResponseDto.class)))
+            when(mapper.toResponseDto(any(Stage.class)))
                     .thenAnswer(invocation -> {
                         Stage s = invocation.getArgument(0);
                         return new StageResponseDto(s.getId(), s.getStageNumber(), s.getDistance(), s.getStartLocation(), s.getEndLocation(),
@@ -204,16 +204,7 @@ class DefaultStageServiceTest {
 
             when(repository.findById(stage.getId())).thenReturn(Optional.of(stage));
             when(competitionRepository.findById(any(CompetitionId.class))).thenReturn(Optional.of(competition));
-            doAnswer(invocation -> {
-                Stage s = invocation.getArgument(1);
-                s.setStageNumber(dto.stageNumber())
-                        .setDistance(dto.distance())
-                        .setStartLocation(dto.startLocation())
-                        .setEndLocation(dto.endLocation())
-                        .setDate(dto.date());
-                return null;
-            }).when(mapper).map(eq(dto), any(Stage.class));
-            when(mapper.map(any(Stage.class), eq(StageResponseDto.class)))
+            when(mapper.toResponseDto(any(Stage.class)))
                     .thenReturn(new StageResponseDto(updatedStage.getId(), updatedStage.getStageNumber(), updatedStage.getDistance(),
                             updatedStage.getStartLocation(), updatedStage.getEndLocation(), updatedStage.getDate(),
                             new EmbeddableCompetition(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate())));

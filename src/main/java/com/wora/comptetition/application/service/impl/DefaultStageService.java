@@ -3,6 +3,7 @@ package com.wora.comptetition.application.service.impl;
 import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.comptetition.application.dto.request.StageRequestDto;
 import com.wora.comptetition.application.dto.response.StageResponseDto;
+import com.wora.comptetition.application.mapper.StageMapper;
 import com.wora.comptetition.application.service.StageService;
 import com.wora.comptetition.application.service.StageValidatorService;
 import com.wora.comptetition.domain.entity.Competition;
@@ -13,7 +14,6 @@ import com.wora.comptetition.domain.valueObject.CompetitionId;
 import com.wora.comptetition.domain.valueObject.StageId;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -27,26 +27,26 @@ public class DefaultStageService implements StageService {
     private final StageRepository repository;
     private final CompetitionRepository competitionRepository;
     private final StageValidatorService stageValidatorService;
-    private final ModelMapper mapper;
+    private final StageMapper mapper;
 
     @Override
     public List<StageResponseDto> findAll() {
         return repository.findAll()
-                .stream().map(this::toResponseDto)
+                .stream().map(mapper::toResponseDto)
                 .toList();
     }
 
     @Override
     public List<StageResponseDto> findAllByCompetitionId(CompetitionId competitionId) {
         return repository.findAllByCompetitionId(competitionId)
-                .stream().map(this::toResponseDto)
+                .stream().map(mapper::toResponseDto)
                 .toList();
     }
 
     @Override
     public StageResponseDto findById(StageId id) {
         return repository.findById(id)
-                .map(this::toResponseDto)
+                .map(mapper::toResponseDto)
                 .orElseThrow(() -> new EntityNotFoundException(id));
     }
 
@@ -59,7 +59,7 @@ public class DefaultStageService implements StageService {
         competition.getStages().add(mappedStage);
         stageValidatorService.validateAndGetStages(competition.getStages());
         Stage savedStage = repository.save(mappedStage);
-        return mapper.map(savedStage, StageResponseDto.class);
+        return mapper.toResponseDto(savedStage);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class DefaultStageService implements StageService {
                 .map(s -> mapToEntity(s, competition))
                 .toList();
         return repository.saveAll(stages)
-                .stream().map(this::toResponseDto)
+                .stream().map(mapper::toResponseDto)
                 .toList();
     }
 
@@ -79,9 +79,12 @@ public class DefaultStageService implements StageService {
         final Competition competition = competitionRepository.findById(new CompetitionId(dto.competitionId()))
                 .orElseThrow(() -> new EntityNotFoundException("competition", id));
 
-        mapper.map(dto, stage);
-        stage.setCompetition(competition);
-        return toResponseDto(stage);
+        stage.setStageNumber(dto.stageNumber())
+                .setDistance(dto.distance())
+                .setStartLocation(dto.startLocation())
+                .setEndLocation(dto.endLocation())
+                .setCompetition(competition);
+        return mapper.toResponseDto(stage);
     }
 
     @Override
@@ -92,12 +95,8 @@ public class DefaultStageService implements StageService {
         repository.deleteById(id);
     }
 
-    private StageResponseDto toResponseDto(Stage stage) {
-        return mapper.map(stage, StageResponseDto.class);
-    }
-
     private Stage mapToEntity(StageRequestDto dto, Competition competition) {
-        return mapper.map(dto, Stage.class)
+        return mapper.toEntity(dto)
                 .setCompetition(competition);
     }
 }
