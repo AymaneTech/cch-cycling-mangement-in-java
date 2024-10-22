@@ -42,7 +42,8 @@ public class DefaultCompetitionService implements CompetitionService {
     @Override
     public CompetitionResponseDto create(CompetitionRequestDto dto) {
         Competition mappedCompetition = mapper.map(dto, Competition.class);
-        mappedCompetition.setStages(stageValidatorService.validateAndGetStages(dto.stages()));
+        mappedCompetition._setStages(stageValidatorService.validateDtoAndGetStages(dto.stages()));
+        //todo: still need to validate that all stages dates are between competition start and end date
 
         final Competition competition = repository.save(mappedCompetition);
         return toResponseDto(competition);

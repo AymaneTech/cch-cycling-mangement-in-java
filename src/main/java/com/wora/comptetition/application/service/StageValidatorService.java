@@ -6,5 +6,7 @@ import com.wora.comptetition.domain.entity.Stage;
 import java.util.List;
 
 public interface StageValidatorService {
-    List<Stage> validateAndGetStages(List<StageRequestDto> dtos);
+    List<Stage> validateDtoAndGetStages(List<StageRequestDto> dtos);
+
+    List<Stage> validateAndGetStages(List<Stage> stages);
 }

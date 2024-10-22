@@ -4,6 +4,7 @@ import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.comptetition.application.dto.request.StageRequestDto;
 import com.wora.comptetition.application.dto.response.StageResponseDto;
 import com.wora.comptetition.application.service.StageService;
+import com.wora.comptetition.application.service.StageValidatorService;
 import com.wora.comptetition.domain.entity.Competition;
 import com.wora.comptetition.domain.entity.Stage;
 import com.wora.comptetition.domain.repository.CompetitionRepository;
@@ -25,6 +26,7 @@ import java.util.List;
 public class DefaultStageService implements StageService {
     private final StageRepository repository;
     private final CompetitionRepository competitionRepository;
+    private final StageValidatorService stageValidatorService;
     private final ModelMapper mapper;
 
     @Override
@@ -51,9 +53,11 @@ public class DefaultStageService implements StageService {
     @Override
     public StageResponseDto create(StageRequestDto dto) {
         final Competition competition = competitionRepository.findById(new CompetitionId(dto.competitionId()))
-                .orElseThrow(() -> new EntityNotFoundException(dto.competitionId()));
+                .orElseThrow(() -> new EntityNotFoundException("competition", dto.competitionId()));
 
         Stage mappedStage = mapToEntity(dto, competition);
+        competition.getStages().add(mappedStage);
+        stageValidatorService.validateAndGetStages(competition.getStages());
         Stage savedStage = repository.save(mappedStage);
         return mapper.map(savedStage, StageResponseDto.class);
     }
@@ -71,9 +75,9 @@ public class DefaultStageService implements StageService {
     @Override
     public StageResponseDto update(StageId id, StageRequestDto dto) {
         final Stage stage = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(id));
+                .orElseThrow(() -> new EntityNotFoundException("stage", id));
         final Competition competition = competitionRepository.findById(new CompetitionId(dto.competitionId()))
-                .orElseThrow(() -> new EntityNotFoundException(id));
+                .orElseThrow(() -> new EntityNotFoundException("competition", id));
 
         mapper.map(dto, stage);
         stage.setCompetition(competition);

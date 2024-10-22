@@ -1,5 +1,6 @@
 package com.wora.comptetition.application.service.impl;
 
+import com.wora.common.domain.exception.EntityCreationException;
 import com.wora.comptetition.application.dto.request.StageRequestDto;
 import com.wora.comptetition.application.service.StageValidatorService;
 import com.wora.comptetition.domain.entity.Stage;
@@ -8,10 +9,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,47 +18,103 @@ public class DefaultStageValidatorService implements StageValidatorService {
     private final ModelMapper mapper;
 
     @Override
-    public List<Stage> validateAndGetStages(List<StageRequestDto> dtos) {
+
+    public List<Stage> validateDtoAndGetStages(List<StageRequestDto> dtos) {
         if (dtos.isEmpty())
             return List.of();
 
-        return validateStages(dtos)
-                .stream().map(s -> mapper.map(s, Stage.class))
+        List<Stage> mappedStages = dtos.stream()
+                .map(s -> mapper.map(s, Stage.class))
                 .toList();
+        return validateStages(mappedStages);
     }
 
-    private static List<StageRequestDto> validateStages(List<StageRequestDto> dtos) {
-        List<StageRequestDto> sortedStages = dtos.stream()
-                .sorted(Comparator.comparing(StageRequestDto::stageNumber))
+    @Override
+    public List<Stage> validateAndGetStages(List<Stage> stages) {
+        if (stages.isEmpty())
+            return List.of();
+
+        return validateStages(stages);
+    }
+
+    private List<Stage> validateStages(List<Stage> stages) {
+        List<Stage> sortedStages = stages.stream()
+                .sorted(Comparator.comparing(Stage::getStageNumber))
                 .toList();
+        List<String> errors = new ArrayList<>();
 
-        Set<LocalDate> uniqueDates = new HashSet<>();
-        Set<Pair<String>> locationPairs = new HashSet<>();
+        validateDuplicatedStageNumbers(sortedStages).ifPresent(errors::add);
+        validateUniqueDates(sortedStages).ifPresent(errors::add);
+        validateRoutes(sortedStages).ifPresent(errors::addAll);
+        validateStageConnections(sortedStages).ifPresent(errors::addAll);
 
-        for (int i = 0; i < sortedStages.size(); i++) {
-            StageRequestDto stage = sortedStages.get(i);
-            String start = stage.startLocation();
-            String end = stage.endLocation();
+        if (!errors.isEmpty())
+            throw new EntityCreationException(
+                    "Failed to save the competition because of stages errors, sir tatjib data mgada o n3yto lik",
+                    errors
+            );
 
-            if (!locationPairs.add(new Pair<>(start, end)))
-                throw new IllegalArgumentException("duplicated route found: " + start + " -> " + end);
-
-            if (!uniqueDates.add(stage.date()))
-                throw new IllegalArgumentException("Competition has two or more stages in the same date");
-
-            if (start.equals(end))
-                throw new IllegalArgumentException("Duplicate start and end locations found " + start + " -> " + end);
-
-            if (i > 0) {
-                String previousEnd = sortedStages.get(i - 1).endLocation();
-                if (!previousEnd.equals(start)) {
-                    throw new IllegalArgumentException("Stages are not connected. Stage " + i + " should start at " + previousEnd);
-                }
-            }
-        }
         return sortedStages;
     }
 
-    record Pair<T>(T first, T second) {
+    private Optional<String> validateDuplicatedStageNumbers(List<Stage> stages) {
+        Set<Integer> visitedStageNumbers = new HashSet<>();
+        Set<Integer> duplicatedStageNumbers = stages.stream()
+                .map(Stage::getStageNumber)
+                .filter(number -> !visitedStageNumbers.add(number))
+                .collect(Collectors.toSet());
+
+        return duplicatedStageNumbers.isEmpty()
+                ? Optional.empty()
+                : Optional.of("Duplicate Stage Numbers Found: " + duplicatedStageNumbers);
+    }
+
+    private Optional<String> validateUniqueDates(List<Stage> stages) {
+        Set<LocalDate> visitedDates = new HashSet<>();
+        Set<LocalDate> duplicatedDates = stages.stream()
+                .map(Stage::getDate)
+                .filter(date -> !visitedDates.add(date))
+                .collect(Collectors.toSet());
+        return duplicatedDates.isEmpty()
+                ? Optional.empty()
+                : Optional.of("Duplicate Stage date Found: " + duplicatedDates);
+    }
+
+    private Optional<List<String>> validateRoutes(List<Stage> stages) {
+        Set<Route> visitedRoutes = new HashSet<>();
+        List<String> errors = new ArrayList<>();
+
+        stages.stream()
+                .map(stage -> new Route(stage.getStartLocation(), stage.getEndLocation()))
+                .forEach(route -> {
+                    if (!visitedRoutes.add(route))
+                        errors.add("Duplicated Route Found: " + route.start + " -> " + route.end);
+
+                    if (route.start.equals(route.end))
+                        errors.add("Start and End locations are the same, which is not good motherfucker: " + route.start);
+                });
+        return errors.isEmpty()
+                ? Optional.empty()
+                : Optional.of(errors);
+    }
+
+    private Optional<List<String>> validateStageConnections(List<Stage> stages) {
+        if (stages.size() <= 1)
+            return Optional.empty();
+
+        List<String> errors = new ArrayList<>();
+
+        stages.stream()
+                .reduce((prev, curr) -> {
+                    if (!prev.getEndLocation().equals(curr.getStartLocation()))
+                        errors.add("Stages are not connected. Stage " + curr.getStageResults() +
+                                " Should Start at " + prev.getEndLocation());
+                    return curr;
+                });
+        return errors.isEmpty() ? Optional.empty() : Optional.of(errors);
+    }
+
+
+    record Route(String start, String end) {
     }
 }
