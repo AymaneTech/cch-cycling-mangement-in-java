@@ -7,13 +7,12 @@ import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
 
-public record StageResponseDto(
-        @NotNull StageId id,
-        @NotNull @Positive Integer stageNumber,
-        @NotNull @Positive Double distance,
-        @NotBlank String startLocation,
-        @NotBlank String endLocation,
-        @NotNull LocalDate date,
-        @NotNull CompetitionResponseDto competition
+public record StageResponseDto(@NotNull StageId id,
+                               @NotNull @Positive Integer stageNumber,
+                               @NotNull @Positive Double distance,
+                               @NotBlank String startLocation,
+                               @NotBlank String endLocation,
+                               @NotNull LocalDate date,
+                               @NotNull EmbeddableCompetition competition
 ) {
 }
