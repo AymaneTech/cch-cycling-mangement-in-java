@@ -6,6 +6,6 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @ComponentScan("com.wora")
-@Import({PersistenceConfig.class, ModelMapperConfig.class})
+@Import({PersistenceConfig.class, ModelMapperConfig.class, WebMvcConfig.class})
 public class ApplicationConfig {
 }

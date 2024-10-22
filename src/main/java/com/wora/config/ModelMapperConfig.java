@@ -69,7 +69,7 @@ public class ModelMapperConfig {
                     stage.getStartLocation(),
                     stage.getEndLocation(),
                     stage.getDate(),
-                    mapper.map(stage.getCompetition(), CompetitionResponseDto.class)
+                    mapper.map(stage.getCompetition(), EmbeddableCompetition.class)
             );
         }, Stage.class, StageResponseDto.class);
 
@@ -102,6 +102,11 @@ public class ModelMapperConfig {
                     stageResult.getPosition()
             );
         }, StageResult.class, PassedStageResponseDto.class);
+
+        mapper.addConverter(context -> {
+            Competition competition = context.getSource();
+            return new EmbeddableCompetition(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate());
+        }, Competition.class, EmbeddableCompetition.class);
 
         return mapper;
     }

@@ -2,7 +2,7 @@ package com.wora.comptetition.application.service;
 
 import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.comptetition.application.dto.request.StageRequestDto;
-import com.wora.comptetition.application.dto.response.CompetitionResponseDto;
+import com.wora.comptetition.application.dto.response.EmbeddableCompetition;
 import com.wora.comptetition.application.dto.response.StageResponseDto;
 import com.wora.comptetition.application.service.impl.DefaultStageService;
 import com.wora.comptetition.domain.entity.Competition;
@@ -39,6 +39,8 @@ class DefaultStageServiceTest {
     @Mock
     private CompetitionRepository competitionRepository;
     @Mock
+    private StageValidatorService stageValidatorService;
+    @Mock
     private ModelMapper mapper;
 
     private StageService sut;
@@ -48,7 +50,7 @@ class DefaultStageServiceTest {
 
     @BeforeEach
     void setup() {
-        this.sut = new DefaultStageService(repository, competitionRepository, mapper);
+        this.sut = new DefaultStageService(repository, competitionRepository, stageValidatorService, mapper);
         stage = new Stage(1, 30.3, "marrakech", "casablanca", LocalDate.now(), competition).setId(new StageId());
         competition = new Competition(new CompetitionId(), "maroc", LocalDate.now(), LocalDate.now().plusMonths(1));
     }
@@ -80,8 +82,8 @@ class DefaultStageServiceTest {
                         Stage stage = invocation.getArgument(0);
                         return new StageResponseDto(stage.getId(), stage.getStageNumber(), stage.getDistance(),
                                 stage.getStartLocation(), stage.getEndLocation(), stage.getDate(),
-                                new CompetitionResponseDto(competition.getId(), competition.getName(),
-                                        competition.getStartDate(), competition.getEndDate(), List.of()));
+                                new EmbeddableCompetition(competition.getId(), competition.getName(),
+                                        competition.getStartDate(), competition.getEndDate()));
                     });
 
             List<StageResponseDto> actual = sut.findAll();
@@ -108,8 +110,8 @@ class DefaultStageServiceTest {
                         Stage stage = invocation.getArgument(0);
                         return new StageResponseDto(stage.getId(), stage.getStageNumber(), stage.getDistance(),
                                 stage.getStartLocation(), stage.getEndLocation(), stage.getDate(),
-                                new CompetitionResponseDto(competition.getId(), competition.getName(),
-                                        competition.getStartDate(), competition.getEndDate(), List.of()));
+                                new EmbeddableCompetition(competition.getId(), competition.getName(),
+                                        competition.getStartDate(), competition.getEndDate()));
                     });
 
             List<StageResponseDto> actual = sut.findAllByCompetitionId(competition.getId());
@@ -136,8 +138,8 @@ class DefaultStageServiceTest {
             when(repository.findById(stage.getId())).thenReturn(Optional.of(stage));
             when(mapper.map(any(Stage.class), eq(StageResponseDto.class)))
                     .thenReturn(new StageResponseDto(stage.getId(), stage.getStageNumber(), stage.getDistance(), stage.getStartLocation(),
-                            stage.getEndLocation(), stage.getDate(), new CompetitionResponseDto(competition.getId(), competition.getName(),
-                            competition.getStartDate(), competition.getEndDate(), List.of())));
+                            stage.getEndLocation(), stage.getDate(), new EmbeddableCompetition(competition.getId(), competition.getName(),
+                            competition.getStartDate(), competition.getEndDate())));
 
             StageResponseDto actual = sut.findById(stage.getId());
 
@@ -173,8 +175,8 @@ class DefaultStageServiceTest {
                     .thenAnswer(invocation -> {
                         Stage s = invocation.getArgument(0);
                         return new StageResponseDto(s.getId(), s.getStageNumber(), s.getDistance(), s.getStartLocation(), s.getEndLocation(),
-                                s.getDate(), new CompetitionResponseDto(competition.getId(), competition.getName(),
-                                competition.getStartDate(), competition.getEndDate(), List.of()));
+                                s.getDate(), new EmbeddableCompetition(competition.getId(), competition.getName(),
+                                competition.getStartDate(), competition.getEndDate()));
                     });
 
             StageResponseDto actual = sut.create(dto);
@@ -214,7 +216,7 @@ class DefaultStageServiceTest {
             when(mapper.map(any(Stage.class), eq(StageResponseDto.class)))
                     .thenReturn(new StageResponseDto(updatedStage.getId(), updatedStage.getStageNumber(), updatedStage.getDistance(),
                             updatedStage.getStartLocation(), updatedStage.getEndLocation(), updatedStage.getDate(),
-                            new CompetitionResponseDto(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of())));
+                            new EmbeddableCompetition(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate())));
 
             StageResponseDto actual = sut.update(stage.getId(), dto);
 

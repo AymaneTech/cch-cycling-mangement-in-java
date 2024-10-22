@@ -5,13 +5,13 @@ import com.wora.comptetition.domain.valueObject.CompetitionId;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -40,10 +40,10 @@ public class Competition {
     private LocalDate endDate;
 
     @OneToMany(mappedBy = "competition", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Stage> stages;
+    private List<Stage> stages = new ArrayList<>();
 
     @OneToMany(mappedBy = "competition")
-    private List<GeneralResult> generalResults;
+    private List<GeneralResult> generalResults = new ArrayList<>();
 
     @Embedded
     private Timestamp timestamp;
@@ -61,4 +61,8 @@ public class Competition {
         this.endDate = endDate;
     }
 
+    public void _setStages(List<Stage> stages) {
+        this.stages = stages;
+        this.stages.forEach(stage -> stage.setCompetition(this));
+    }
 }
