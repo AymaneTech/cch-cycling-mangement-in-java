@@ -3,6 +3,7 @@ package com.wora.rider.application.service.impl;
 import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.rider.application.dto.request.RiderRequestDto;
 import com.wora.rider.application.dto.response.RiderResponseDto;
+import com.wora.rider.application.mapper.RiderMapper;
 import com.wora.rider.application.service.RiderService;
 import com.wora.rider.domain.entity.Rider;
 import com.wora.rider.domain.entity.Team;
@@ -12,7 +13,6 @@ import com.wora.rider.domain.valueObject.RiderId;
 import com.wora.rider.domain.valueObject.TeamId;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -25,54 +25,52 @@ import java.util.List;
 public class DefaultRiderService implements RiderService {
     private final RiderRepository repository;
     private final TeamRepository teamRepository;
-    private final ModelMapper mapper;
+    private final RiderMapper mapper;
 
     @Override
     public List<RiderResponseDto> findAll() {
         return repository.findAll()
-                .stream().map(this::toResponseDto)
+                .stream().map(mapper::toResponseDto)
                 .toList();
     }
 
     @Override
     public RiderResponseDto findById(RiderId id) {
         return repository.findById(id)
-                .map(this::toResponseDto)
+                .map(mapper::toResponseDto)
                 .orElseThrow(() -> new EntityNotFoundException(id));
     }
 
     @Override
     public RiderResponseDto create(RiderRequestDto dto) {
         final Team team = teamRepository.findById(new TeamId(dto.teamId()))
-                .orElseThrow(() -> new EntityNotFoundException(dto.teamId()));
+                .orElseThrow(() -> new EntityNotFoundException("team", dto.teamId()));
 
-        final Rider mappedRider = mapper.map(dto, Rider.class)
+        final Rider mappedRider = mapper.toEntity(dto)
                 .setTeam(team);
         final Rider savedRider = repository.save(mappedRider);
-        return toResponseDto(savedRider);
+        return mapper.toResponseDto(savedRider);
     }
 
     @Override
     public RiderResponseDto update(RiderId id, RiderRequestDto dto) {
         final Rider rider = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(id));
+                .orElseThrow(() -> new EntityNotFoundException("rider", id));
         final Team team = teamRepository.findById(new TeamId(dto.teamId()))
-                .orElseThrow(() -> new EntityNotFoundException(id));
-        mapper.map(dto, rider);
-        rider.setTeam(team);
+                .orElseThrow(() -> new EntityNotFoundException("team", id));
+        rider.setName(dto.name())
+                .setNationality(dto.nationality())
+                .setDateOfBirth(dto.dateOfBirth())
+                .setTeam(team);
 
-        return toResponseDto(rider);
+        return mapper.toResponseDto(rider);
     }
 
     @Override
     public void delete(RiderId id) {
-        if(! repository.existsById(id))
-            throw new EntityNotFoundException(id);
+        if (!repository.existsById(id))
+            throw new EntityNotFoundException("rider", id);
 
         repository.deleteById(id);
-    }
-
-    private RiderResponseDto toResponseDto(Rider rider) {
-        return mapper.map(rider, RiderResponseDto.class);
     }
 }
