@@ -3,6 +3,7 @@ package com.wora.comptetition.application.service;
 import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.comptetition.application.dto.request.CompetitionRequestDto;
 import com.wora.comptetition.application.dto.response.CompetitionResponseDto;
+import com.wora.comptetition.application.mapper.CompetitionMapper;
 import com.wora.comptetition.application.service.impl.DefaultCompetitionService;
 import com.wora.comptetition.domain.entity.Competition;
 import com.wora.comptetition.domain.repository.CompetitionRepository;
@@ -14,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,7 +34,7 @@ class DefaultCompetitionServiceTest {
     @Mock
     private StageValidatorService stageValidatorService;
     @Mock
-    private ModelMapper mapper;
+    private CompetitionMapper mapper;
 
     //    @InjectMocks
     private CompetitionService sut;
@@ -72,7 +72,7 @@ class DefaultCompetitionServiceTest {
                 Competition competition = invocation.getArgument(0);
                 return new CompetitionResponseDto(new CompetitionId(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of());
             })
-                    .when(mapper).map(any(Competition.class), eq(CompetitionResponseDto.class));
+                    .when(mapper).toResponseDto(any(Competition.class));
             when(repository.findAll()).thenReturn(expected);
 
             List<CompetitionResponseDto> actual = sut.findAll();
@@ -100,7 +100,7 @@ class DefaultCompetitionServiceTest {
             Competition expected = new Competition(new CompetitionId(), "tawaf maroc", LocalDate.now(), LocalDate.now().plusDays(21));
 
             when(repository.findById(any(CompetitionId.class))).thenReturn(Optional.of(expected));
-            when(mapper.map(any(Competition.class), eq(CompetitionResponseDto.class)))
+            when(mapper.toResponseDto(any(Competition.class)))
                     .thenAnswer(invocation -> {
                         Competition competition = invocation.getArgument(0);
                         return new CompetitionResponseDto(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of());
@@ -123,9 +123,9 @@ class DefaultCompetitionServiceTest {
             CompetitionRequestDto expected = new CompetitionRequestDto("maroc ", LocalDate.now().plusMonths(2), LocalDate.now().plusMonths(3), List.of());
             Competition competition = new Competition(new CompetitionId(), expected.name(), expected.startDate(), expected.endDate());
 
-            when(mapper.map(any(CompetitionRequestDto.class), eq(Competition.class))).thenReturn(competition);
+            when(mapper.toEntity(any(CompetitionRequestDto.class))).thenReturn(competition);
             when(repository.save(any(Competition.class))).thenReturn(competition);
-            when(mapper.map(any(Competition.class), eq(CompetitionResponseDto.class)))
+            when(mapper.toResponseDto(any(Competition.class)))
                     .thenReturn(new CompetitionResponseDto(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of()));
 
             CompetitionResponseDto actual = sut.create(expected);
@@ -156,15 +156,7 @@ class DefaultCompetitionServiceTest {
             Competition competition = new Competition(new CompetitionId(), "old info", dto.startDate(), dto.endDate());
 
             when(repository.findById(any(CompetitionId.class))).thenReturn(Optional.of(competition));
-            doAnswer(invocation -> {
-                Competition c = invocation.getArgument(1);
-                c.setName(dto.name())
-                        .setStartDate(dto.startDate())
-                        .setEndDate(dto.endDate());
-                return null;
-
-            }).when(mapper).map(any(CompetitionRequestDto.class), eq(competition));
-            when(mapper.map(any(Competition.class), eq(CompetitionResponseDto.class)))
+            when(mapper.toResponseDto(any(Competition.class)))
                     .thenReturn(new CompetitionResponseDto(competition.getId(), dto.name(), competition.getStartDate(), competition.getEndDate(), List.of()));
 
             CompetitionResponseDto actual = sut.update(competition.getId(), dto);

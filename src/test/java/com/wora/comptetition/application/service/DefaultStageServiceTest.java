@@ -1,8 +1,8 @@
 package com.wora.comptetition.application.service;
 
 import com.wora.common.domain.exception.EntityNotFoundException;
+import com.wora.comptetition.application.dto.embeddable.EmbeddableCompetition;
 import com.wora.comptetition.application.dto.request.StageRequestDto;
-import com.wora.comptetition.application.dto.response.EmbeddableCompetition;
 import com.wora.comptetition.application.dto.response.StageResponseDto;
 import com.wora.comptetition.application.service.impl.DefaultStageService;
 import com.wora.comptetition.domain.entity.Competition;
