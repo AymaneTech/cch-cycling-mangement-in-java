@@ -76,7 +76,7 @@ public class DefaultStageValidatorService implements StageValidatorService {
                 .collect(Collectors.toSet());
         return duplicatedDates.isEmpty()
                 ? Optional.empty()
-                : Optional.of("Duplicate Stage date Found: " + duplicatedDates);
+                : Optional.of("Duplicate Stage Date Found: " + duplicatedDates);
     }
 
     private Optional<List<String>> validateRoutes(List<Stage> stages) {

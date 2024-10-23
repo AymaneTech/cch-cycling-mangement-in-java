@@ -1,5 +1,6 @@
 package com.wora.rider.domain.entity;
 
+import com.wora.common.application.validation.Adult;
 import com.wora.common.domain.valueObject.Timestamp;
 import com.wora.comptetition.domain.entity.GeneralResult;
 import com.wora.comptetition.domain.entity.StageResult;
@@ -7,6 +8,7 @@ import com.wora.rider.domain.valueObject.Name;
 import com.wora.rider.domain.valueObject.RiderId;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,6 +38,8 @@ public class Rider {
     @NotBlank
     private String nationality;
 
+    @NotNull
+    @Adult
     private LocalDate dateOfBirth;
 
     @ManyToOne(optional = false)

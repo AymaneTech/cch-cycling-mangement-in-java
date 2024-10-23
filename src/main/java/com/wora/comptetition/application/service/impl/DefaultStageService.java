@@ -1,5 +1,7 @@
 package com.wora.comptetition.application.service.impl;
 
+import com.wora.common.application.validation.validator.DateValidator;
+import com.wora.common.domain.exception.EntityCreationException;
 import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.comptetition.application.dto.request.StageRequestDto;
 import com.wora.comptetition.application.dto.response.StageResponseDto;
@@ -57,6 +59,7 @@ public class DefaultStageService implements StageService {
 
         Stage mappedStage = mapToEntity(dto, competition);
         competition.getStages().add(mappedStage);
+        validateStagesBetweenCompetitionStartAndEnd(competition.getStages(), competition);
         stageValidatorService.validateAndGetStages(competition.getStages());
         Stage savedStage = repository.save(mappedStage);
         return mapper.toResponseDto(savedStage);
@@ -88,5 +91,17 @@ public class DefaultStageService implements StageService {
     private Stage mapToEntity(StageRequestDto dto, Competition competition) {
         return mapper.toEntity(dto)
                 .setCompetition(competition);
+    }
+
+    private void validateStagesBetweenCompetitionStartAndEnd(List<Stage> stages, Competition competition) {
+        boolean hasInvalidDate = stages.stream()
+                .map(Stage::getDate)
+                .anyMatch(date -> !DateValidator.isDateBetween(date, competition.getStartDate(), competition.getEndDate()));
+
+        if (hasInvalidDate)
+            throw new EntityCreationException("""
+                    Failed to save stages
+                    because there is some stage that his date not between competition dates
+                    """, List.of());
     }
 }
