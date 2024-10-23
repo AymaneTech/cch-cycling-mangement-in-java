@@ -11,6 +11,7 @@ import com.wora.comptetition.domain.entity.GeneralResult;
 import com.wora.comptetition.domain.repository.CompetitionRepository;
 import com.wora.comptetition.domain.repository.GeneralResultRepository;
 import com.wora.comptetition.domain.valueObject.CompetitionId;
+import com.wora.comptetition.domain.valueObject.GeneralResultId;
 import com.wora.rider.application.dto.response.RiderResponseDto;
 import com.wora.rider.domain.entity.Rider;
 import com.wora.rider.domain.repository.RiderRepository;
@@ -83,6 +84,7 @@ class DefaultGeneralResultServiceTest {
         when(repository.save(any(GeneralResult.class))).thenReturn(expected);
         when(mapper.toResponseDto(any(GeneralResult.class)))
                 .thenReturn(new SubscribeToCompetitionResponseDto(
+                        new GeneralResultId(rider.getId(), competition.getId()),
                         new CompetitionResponseDto(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of()),
                         new RiderResponseDto(rider.getId(), rider.getName(), rider.getNationality(), rider.getDateOfBirth(), null)
                 ));

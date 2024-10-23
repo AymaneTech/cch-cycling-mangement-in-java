@@ -4,6 +4,7 @@ import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.comptetition.application.dto.request.PassedStageRequestDto;
 import com.wora.comptetition.application.dto.response.PassedStageResponseDto;
 import com.wora.comptetition.application.dto.response.StageResponseDto;
+import com.wora.comptetition.application.mapper.StageResultMapper;
 import com.wora.comptetition.application.service.impl.DefaultStageResultService;
 import com.wora.comptetition.domain.entity.Stage;
 import com.wora.comptetition.domain.entity.StageResult;
@@ -21,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -43,7 +43,7 @@ class DefaultStageResultServiceTest {
     @Mock
     private StageRepository stageRepository;
     @Mock
-    private ModelMapper mapper;
+    private StageResultMapper mapper;
 
     private StageResultService sut;
     private PassedStageRequestDto dto;
@@ -81,7 +81,7 @@ class DefaultStageResultServiceTest {
         when(riderRepository.findById(any(RiderId.class))).thenReturn(Optional.of(rider));
         when(stageRepository.findById(any(StageId.class))).thenReturn(Optional.of(stage));
         when(repository.save(any(StageResult.class))).thenReturn(expected);
-        when(mapper.map(any(StageResult.class), eq(PassedStageResponseDto.class)))
+        when(mapper.toResponseDto(any(StageResult.class)))
                 .thenReturn(new PassedStageResponseDto(
                                 new StageResponseDto(stage.getId(), stage.getStageNumber(), stage.getDistance(), stage.getStartLocation(), stage.getEndLocation(), stage.getDate(), null),
                                 new RiderResponseDto(rider.getId(), rider.getName(), rider.getNationality(), rider.getDateOfBirth(), null),
@@ -93,6 +93,4 @@ class DefaultStageResultServiceTest {
         assertEquals(expected.getStage().getStageNumber(), actual.stage().stageNumber());
         assertEquals(expected.getRider().getName(), actual.rider().name());
     }
-
-
 }

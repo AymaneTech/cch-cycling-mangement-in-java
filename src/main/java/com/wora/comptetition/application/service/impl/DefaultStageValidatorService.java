@@ -2,10 +2,10 @@ package com.wora.comptetition.application.service.impl;
 
 import com.wora.common.domain.exception.EntityCreationException;
 import com.wora.comptetition.application.dto.request.StageRequestDto;
+import com.wora.comptetition.application.mapper.StageMapper;
 import com.wora.comptetition.application.service.StageValidatorService;
 import com.wora.comptetition.domain.entity.Stage;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class DefaultStageValidatorService implements StageValidatorService {
-    private final ModelMapper mapper;
+    private final StageMapper mapper;
 
     @Override
 
@@ -24,7 +24,7 @@ public class DefaultStageValidatorService implements StageValidatorService {
             return List.of();
 
         List<Stage> mappedStages = dtos.stream()
-                .map(s -> mapper.map(s, Stage.class))
+                .map(mapper::toEntity)
                 .toList();
         return validateStages(mappedStages);
     }
@@ -113,7 +113,6 @@ public class DefaultStageValidatorService implements StageValidatorService {
                 });
         return errors.isEmpty() ? Optional.empty() : Optional.of(errors);
     }
-
 
     record Route(String start, String end) {
     }

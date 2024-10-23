@@ -5,7 +5,6 @@ import com.wora.comptetition.domain.valueObject.StageResultId;
 import com.wora.rider.domain.entity.Rider;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,8 +22,6 @@ public class StageResult {
     @EmbeddedId
     private StageResultId id;
 
-    @NotNull
-    @Positive
     private Integer position;
 
     @NotNull
@@ -38,7 +35,7 @@ public class StageResult {
     @ManyToOne
     private Stage stage;
 
-     @Embedded
+    @Embedded
     private Timestamp timestamp;
 
     public StageResult(Rider rider, Stage stage, Duration duration) {

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class StageResultController {
     public static final String CONTROLLER_PATH = "/api/v1/stage-results";
-    private StageResultService service;
+    private final StageResultService service;
 
     @PostMapping
     public ResponseEntity<PassedStageResponseDto> save(@RequestBody @Valid PassedStageRequestDto dto) {

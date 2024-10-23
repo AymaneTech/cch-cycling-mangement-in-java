@@ -29,9 +29,9 @@ public class DefaultGeneralResultService implements GeneralResultService {
     @Override
     public SubscribeToCompetitionResponseDto subscribeToCompetition(SubscribeToCompetitionRequestDto dto) {
         final Rider rider = riderRepository.findById(dto.riderId())
-                .orElseThrow(() -> new EntityNotFoundException(dto.competitionId()));
+                .orElseThrow(() -> new EntityNotFoundException("rider", dto.riderId()));
         final Competition competition = competitionRepository.findById(dto.competitionId())
-                .orElseThrow(() -> new EntityNotFoundException(dto.competitionId()));
+                .orElseThrow(() -> new EntityNotFoundException("competition ", dto.competitionId()));
 
         GeneralResult generalResult = new GeneralResult(competition, rider);
         GeneralResult savedResult = repository.save(generalResult);

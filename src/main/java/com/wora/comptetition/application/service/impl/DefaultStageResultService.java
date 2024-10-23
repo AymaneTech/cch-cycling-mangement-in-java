@@ -3,6 +3,7 @@ package com.wora.comptetition.application.service.impl;
 import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.comptetition.application.dto.request.PassedStageRequestDto;
 import com.wora.comptetition.application.dto.response.PassedStageResponseDto;
+import com.wora.comptetition.application.mapper.StageResultMapper;
 import com.wora.comptetition.application.service.StageResultService;
 import com.wora.comptetition.domain.entity.Stage;
 import com.wora.comptetition.domain.entity.StageResult;
@@ -12,7 +13,6 @@ import com.wora.rider.domain.entity.Rider;
 import com.wora.rider.domain.repository.RiderRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -24,7 +24,7 @@ public class DefaultStageResultService implements StageResultService {
     private final StageResultRepository stageResultRepository;
     private final RiderRepository riderRepository;
     private final StageRepository stageRepository;
-    private final ModelMapper mapper;
+    private final StageResultMapper mapper;
 
     @Override
     public PassedStageResponseDto savePassedStage(PassedStageRequestDto dto) {
@@ -34,6 +34,6 @@ public class DefaultStageResultService implements StageResultService {
                 .orElseThrow(() -> new EntityNotFoundException(dto.stageId()));
 
         final StageResult savedResult = stageResultRepository.save(new StageResult(rider, stage, dto.duration()));
-        return mapper.map(savedResult, PassedStageResponseDto.class);
+        return mapper.toResponseDto(savedResult);
     }
 }
