@@ -74,8 +74,8 @@ class DefaultRiderServiceTest {
                     .thenAnswer(invocation -> {
                         Rider rider = invocation.getArgument(0);
                         return new RiderResponseDto(
-                                rider.getId(), rider.getName(), rider.getNationality(), rider.getDateOfBirth(),
-                                new EmbeddableTeam(rider.getTeam().getId(), rider.getTeam().getName(), rider.getTeam().getCountry()));
+                                rider.getId().value(), rider.getName(), rider.getNationality(), rider.getDateOfBirth(),
+                                new EmbeddableTeam(rider.getTeam().getId().value(), rider.getTeam().getName(), rider.getTeam().getCountry()));
                     });
 
             List<RiderResponseDto> actual = sut.findAll();
@@ -106,11 +106,11 @@ class DefaultRiderServiceTest {
         void findById_ShouldReturnExistingRiderWhenGivenExistingId() {
             when(riderRepository.findById(rider.getId())).thenReturn(Optional.of(rider));
             when(mapper.toResponseDto(any(Rider.class)))
-                    .thenReturn(new RiderResponseDto(rider.getId(), rider.getName(), rider.getNationality(), rider.getDateOfBirth(), null));
+                    .thenReturn(new RiderResponseDto(rider.getId().value(), rider.getName(), rider.getNationality(), rider.getDateOfBirth(), null));
 
             RiderResponseDto actual = sut.findById(rider.getId());
 
-            assertEquals(rider.getId(), actual.id());
+            assertEquals(rider.getId().value(), actual.id());
             assertNotNull(actual);
         }
 
@@ -139,12 +139,12 @@ class DefaultRiderServiceTest {
             when(mapper.toResponseDto(any(Rider.class)))
                     .thenAnswer(invocation -> {
                         Rider r = invocation.getArgument(0);
-                        return new RiderResponseDto(r.getId(), r.getName(), r.getNationality(), r.getDateOfBirth(), null);
+                        return new RiderResponseDto(r.getId().value(), r.getName(), r.getNationality(), r.getDateOfBirth(), null);
                     });
 
             RiderResponseDto actual = sut.create(dto);
 
-            assertEquals(rider.getId(), actual.id());
+            assertEquals(rider.getId().value(), actual.id());
             assertEquals(rider.getName(), actual.name());
         }
 
@@ -188,11 +188,11 @@ class DefaultRiderServiceTest {
             when(riderRepository.findById(any(RiderId.class))).thenReturn(Optional.of(rider));
             when(teamRepository.findById(any(TeamId.class))).thenReturn(Optional.of(team));
             when(mapper.toResponseDto(any(Rider.class)))
-                    .thenReturn(new RiderResponseDto(updatedRider.getId(), updatedRider.getName(), updatedRider.getNationality(), updatedRider.getDateOfBirth(), null));
+                    .thenReturn(new RiderResponseDto(updatedRider.getId().value(), updatedRider.getName(), updatedRider.getNationality(), updatedRider.getDateOfBirth(), null));
 
             RiderResponseDto actual = sut.update(rider.getId(), dto);
 
-            assertEquals(rider.getId(), actual.id());
+            assertEquals(rider.getId().value(), actual.id());
             assertEquals(rider.getName(), actual.name());
             verify(riderRepository).findById(any(RiderId.class));
         }

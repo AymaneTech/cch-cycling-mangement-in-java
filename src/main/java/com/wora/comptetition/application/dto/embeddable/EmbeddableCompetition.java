@@ -1,12 +1,12 @@
 package com.wora.comptetition.application.dto.embeddable;
 
-import com.wora.comptetition.domain.valueObject.CompetitionId;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
-public record EmbeddableCompetition(@NotNull CompetitionId id,
+public record EmbeddableCompetition(@NotNull UUID id,
                                     @NotBlank String name,
                                     @NotNull LocalDate startDate,
                                     @NotNull LocalDate endDate

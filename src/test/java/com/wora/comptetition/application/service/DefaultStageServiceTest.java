@@ -72,17 +72,17 @@ class DefaultStageServiceTest {
         @Test
         void findAll_ShouldReturnStagesList_WhenTheyExist() {
             List<Stage> expected = List.of(
-                    new Stage(1, 30.3, "marrakech", "casablanca", LocalDate.now(), competition),
-                    new Stage(2, 30.3, "casablanca", "rabat", LocalDate.now(), competition)
+                    new Stage(1, 30.3, "marrakech", "casablanca", LocalDate.now(), competition).setId(new StageId()),
+                    new Stage(2, 30.3, "casablanca", "rabat", LocalDate.now(), competition).setId(new StageId())
             );
 
             when(repository.findAll()).thenReturn(expected);
             when(mapper.toResponseDto(any(Stage.class)))
                     .thenAnswer(invocation -> {
                         Stage stage = invocation.getArgument(0);
-                        return new StageResponseDto(stage.getId(), stage.getStageNumber(), stage.getDistance(),
+                        return new StageResponseDto(stage.getId().value(), stage.getStageNumber(), stage.getDistance(),
                                 stage.getStartLocation(), stage.getEndLocation(), stage.getDate(),
-                                new EmbeddableCompetition(competition.getId(), competition.getName(),
+                                new EmbeddableCompetition(competition.getId().value(), competition.getName(),
                                         competition.getStartDate(), competition.getEndDate()));
                     });
 
@@ -100,17 +100,17 @@ class DefaultStageServiceTest {
         @Test
         void findAllByCompetitionId_ShouldReturnStages_WhenGivenCompetitionId() {
             List<Stage> expected = List.of(
-                    new Stage(1, 30.3, "marrakech", "casablanca", LocalDate.now(), competition),
-                    new Stage(2, 30.3, "casablanca", "rabat", LocalDate.now(), competition)
+                    new Stage(1, 30.3, "marrakech", "casablanca", LocalDate.now(), competition).setId(new StageId()),
+                    new Stage(2, 30.3, "casablanca", "rabat", LocalDate.now(), competition).setId(new StageId())
             );
 
             when(repository.findAllByCompetitionId(any(CompetitionId.class))).thenReturn(expected);
             when(mapper.toResponseDto(any(Stage.class)))
                     .thenAnswer(invocation -> {
                         Stage stage = invocation.getArgument(0);
-                        return new StageResponseDto(stage.getId(), stage.getStageNumber(), stage.getDistance(),
+                        return new StageResponseDto(stage.getId().value(), stage.getStageNumber(), stage.getDistance(),
                                 stage.getStartLocation(), stage.getEndLocation(), stage.getDate(),
-                                new EmbeddableCompetition(competition.getId(), competition.getName(),
+                                new EmbeddableCompetition(competition.getId().value(), competition.getName(),
                                         competition.getStartDate(), competition.getEndDate()));
                     });
 
@@ -137,13 +137,13 @@ class DefaultStageServiceTest {
         void findById_ShouldReturnExistingRiderWhenGivenExistingId() {
             when(repository.findById(stage.getId())).thenReturn(Optional.of(stage));
             when(mapper.toResponseDto(any(Stage.class)))
-                    .thenReturn(new StageResponseDto(stage.getId(), stage.getStageNumber(), stage.getDistance(), stage.getStartLocation(),
-                            stage.getEndLocation(), stage.getDate(), new EmbeddableCompetition(competition.getId(), competition.getName(),
+                    .thenReturn(new StageResponseDto(stage.getId().value(), stage.getStageNumber(), stage.getDistance(), stage.getStartLocation(),
+                            stage.getEndLocation(), stage.getDate(), new EmbeddableCompetition(competition.getId().value(), competition.getName(),
                             competition.getStartDate(), competition.getEndDate())));
 
             StageResponseDto actual = sut.findById(stage.getId());
 
-            assertEquals(stage.getId(), actual.id());
+            assertEquals(stage.getId().value(), actual.id());
             assertNotNull(actual);
         }
     }
@@ -174,8 +174,8 @@ class DefaultStageServiceTest {
             when(mapper.toResponseDto(any(Stage.class)))
                     .thenAnswer(invocation -> {
                         Stage s = invocation.getArgument(0);
-                        return new StageResponseDto(s.getId(), s.getStageNumber(), s.getDistance(), s.getStartLocation(), s.getEndLocation(),
-                                s.getDate(), new EmbeddableCompetition(competition.getId(), competition.getName(),
+                        return new StageResponseDto(s.getId().value(), s.getStageNumber(), s.getDistance(), s.getStartLocation(), s.getEndLocation(),
+                                s.getDate(), new EmbeddableCompetition(competition.getId().value(), competition.getName(),
                                 competition.getStartDate(), competition.getEndDate()));
                     });
 
@@ -205,13 +205,13 @@ class DefaultStageServiceTest {
             when(repository.findById(stage.getId())).thenReturn(Optional.of(stage));
             when(competitionRepository.findById(any(CompetitionId.class))).thenReturn(Optional.of(competition));
             when(mapper.toResponseDto(any(Stage.class)))
-                    .thenReturn(new StageResponseDto(updatedStage.getId(), updatedStage.getStageNumber(), updatedStage.getDistance(),
+                    .thenReturn(new StageResponseDto(updatedStage.getId().value(), updatedStage.getStageNumber(), updatedStage.getDistance(),
                             updatedStage.getStartLocation(), updatedStage.getEndLocation(), updatedStage.getDate(),
-                            new EmbeddableCompetition(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate())));
+                            new EmbeddableCompetition(competition.getId().value(), competition.getName(), competition.getStartDate(), competition.getEndDate())));
 
             StageResponseDto actual = sut.update(stage.getId(), dto);
 
-            assertEquals(stage.getId(), actual.id());
+            assertEquals(stage.getId().value(), actual.id());
             assertEquals(dto.stageNumber(), actual.stageNumber());
             assertEquals(dto.distance(), actual.distance());
             assertEquals(dto.startLocation(), actual.startLocation());

@@ -58,7 +58,7 @@ class DefaultTeamServiceTest {
             when(mapper.toResponseDto(any(Team.class)))
                     .thenAnswer(invocation -> {
                         Team team = invocation.getArgument(0);
-                        return new TeamResponseDto(team.getId(), team.getName(), team.getCountry(), List.of());
+                        return new TeamResponseDto(team.getId().value(), team.getName(), team.getCountry(), List.of());
                     });
 
             List<TeamResponseDto> actual = sut.findAll();
@@ -93,7 +93,7 @@ class DefaultTeamServiceTest {
             when(mapper.toResponseDto(any(Team.class)))
                     .thenAnswer(invocation -> {
                         Team team = invocation.getArgument(0);
-                        return new TeamResponseDto(team.getId(), team.getName(), team.getCountry(), List.of());
+                        return new TeamResponseDto(team.getId().value(), team.getName(), team.getCountry(), List.of());
                     });
 
             TeamResponseDto actual = sut.findById(expected.getId());
@@ -130,11 +130,11 @@ class DefaultTeamServiceTest {
                     .thenReturn(expected);
 
             when(mapper.toResponseDto(any(Team.class)))
-                    .thenReturn(new TeamResponseDto(expected.getId(), expected.getName(), expected.getCountry(), List.of()));
+                    .thenReturn(new TeamResponseDto(expected.getId().value(), expected.getName(), expected.getCountry(), List.of()));
 
             TeamResponseDto actual = sut.create(dto);
 
-            assertEquals(expected.getId(), actual.id());
+            assertEquals(expected.getId().value(), actual.id());
             assertNotNull(actual);
             verify(teamRepository).save(any(Team.class));
         }
@@ -165,7 +165,7 @@ class DefaultTeamServiceTest {
             when(teamRepository.findById(teamId)).thenReturn(Optional.of(existingTeam));
 
             when(mapper.toResponseDto(existingTeam)).thenReturn(
-                    new TeamResponseDto(teamId, dto.name(), dto.country(), List.of())
+                    new TeamResponseDto(teamId.value(), dto.name(), dto.country(), List.of())
             );
 
             TeamResponseDto actual = sut.update(teamId, dto);

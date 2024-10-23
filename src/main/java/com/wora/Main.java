@@ -24,7 +24,7 @@ public class Main {
             bean.create(new TeamRequestDto("hehehe", "hehehehehe"));
 
             RiderService riderService = context.getBean(RiderService.class);
-            RiderResponseDto riderResponseDto = riderService.create(new RiderRequestDto(new Name("heheh", "hehehe"), "maroc", LocalDate.now(), result.id().value()));
+            RiderResponseDto riderResponseDto = riderService.create(new RiderRequestDto(new Name("heheh", "hehehe"), "maroc", LocalDate.now(), result.id()));
             System.out.println(riderResponseDto);
         }
 

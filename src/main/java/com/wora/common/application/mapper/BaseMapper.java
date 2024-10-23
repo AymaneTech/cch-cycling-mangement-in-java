@@ -1,8 +1,13 @@
 package com.wora.common.application.mapper;
 
 import org.mapstruct.MapperConfig;
+import org.mapstruct.ReportingPolicy;
 
-@MapperConfig(componentModel = "spring")
+@MapperConfig(
+        componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        uses = {IdValueObjectMapper.class}
+)
 public interface BaseMapper<Entity, Request, Response> {
     Entity toEntity(Request dto);
 
