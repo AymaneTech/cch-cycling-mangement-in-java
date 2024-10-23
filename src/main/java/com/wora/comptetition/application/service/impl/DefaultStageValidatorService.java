@@ -46,6 +46,7 @@ public class DefaultStageValidatorService implements StageValidatorService {
         validateUniqueDates(sortedStages).ifPresent(errors::add);
         validateRoutes(sortedStages).ifPresent(errors::addAll);
         validateStageConnections(sortedStages).ifPresent(errors::addAll);
+        validateStageDatesFollowOrder(sortedStages).ifPresent(errors::addAll);
 
         if (!errors.isEmpty())
             throw new EntityCreationException(
@@ -108,6 +109,21 @@ public class DefaultStageValidatorService implements StageValidatorService {
                     if (!prev.getEndLocation().equals(curr.getStartLocation()))
                         errors.add("Stages are not connected. Stage " + curr.getStageResults() +
                                 " Should Start at " + prev.getEndLocation());
+                    return curr;
+                });
+        return errors.isEmpty() ? Optional.empty() : Optional.of(errors);
+    }
+
+    private Optional<List<String>> validateStageDatesFollowOrder(List<Stage> stages) {
+        if (stages.size() <= 1)
+            return Optional.empty();
+
+        List<String> errors = new ArrayList<>();
+        stages.stream()
+                .reduce((prev, curr) -> {
+                    if (curr.getDate().isAfter(prev.getDate()))
+                        errors.add("stage " + curr.getStageNumber() + "Should not have date after " + prev.getStageNumber());
+
                     return curr;
                 });
         return errors.isEmpty() ? Optional.empty() : Optional.of(errors);
