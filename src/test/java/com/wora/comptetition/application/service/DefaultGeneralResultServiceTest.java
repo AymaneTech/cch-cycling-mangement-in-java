@@ -1,9 +1,9 @@
 package com.wora.comptetition.application.service;
 
 import com.wora.common.domain.exception.EntityNotFoundException;
-import com.wora.comptetition.application.dto.request.SubscribeToCompetitionRequestDto;
+import com.wora.comptetition.application.dto.request.GeneralResultRequestDto;
 import com.wora.comptetition.application.dto.response.CompetitionResponseDto;
-import com.wora.comptetition.application.dto.response.SubscribeToCompetitionResponseDto;
+import com.wora.comptetition.application.dto.response.GeneralResultResponseDto;
 import com.wora.comptetition.application.mapper.GeneralResultMapper;
 import com.wora.comptetition.application.service.impl.DefaultGeneralResultService;
 import com.wora.comptetition.domain.entity.Competition;
@@ -47,13 +47,13 @@ class DefaultGeneralResultServiceTest {
     private GeneralResultMapper mapper;
 
     private GeneralResultService sut;
-    private SubscribeToCompetitionRequestDto dto;
+    private GeneralResultRequestDto dto;
 
 
     @BeforeEach
     void setup() {
         sut = new DefaultGeneralResultService(repository, riderRepository, competitionRepository, mapper);
-        dto = new SubscribeToCompetitionRequestDto(new CompetitionId(), new RiderId());
+        dto = new GeneralResultRequestDto(new CompetitionId(), new RiderId());
     }
 
     @Test
@@ -83,13 +83,13 @@ class DefaultGeneralResultServiceTest {
         when(competitionRepository.findById(any(CompetitionId.class))).thenReturn(Optional.of(competition));
         when(repository.save(any(GeneralResult.class))).thenReturn(expected);
         when(mapper.toResponseDto(any(GeneralResult.class)))
-                .thenReturn(new SubscribeToCompetitionResponseDto(
+                .thenReturn(new GeneralResultResponseDto(
                         new GeneralResultId(rider.getId(), competition.getId()),
                         new CompetitionResponseDto(competition.getId(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of()),
                         new RiderResponseDto(rider.getId(), rider.getName(), rider.getNationality(), rider.getDateOfBirth(), null)
                 ));
 
-        SubscribeToCompetitionResponseDto actual = sut.subscribeToCompetition(dto);
+        GeneralResultResponseDto actual = sut.subscribeToCompetition(dto);
 
         assertEquals(expected.getCompetition().getName(), actual.competition().name());
         assertEquals(expected.getRider().getName(), actual.rider().name());

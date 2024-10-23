@@ -63,16 +63,6 @@ public class DefaultStageService implements StageService {
     }
 
     @Override
-    public List<StageResponseDto> saveAll(List<StageRequestDto> stageRequestDtos, Competition competition) {
-        final List<Stage> stages = stageRequestDtos.stream()
-                .map(s -> mapToEntity(s, competition))
-                .toList();
-        return repository.saveAll(stages)
-                .stream().map(mapper::toResponseDto)
-                .toList();
-    }
-
-    @Override
     public StageResponseDto update(StageId id, StageRequestDto dto) {
         final Stage stage = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("stage", id));

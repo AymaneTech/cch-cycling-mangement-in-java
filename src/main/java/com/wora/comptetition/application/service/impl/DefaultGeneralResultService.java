@@ -1,20 +1,25 @@
 package com.wora.comptetition.application.service.impl;
 
 import com.wora.common.domain.exception.EntityNotFoundException;
-import com.wora.comptetition.application.dto.request.SubscribeToCompetitionRequestDto;
-import com.wora.comptetition.application.dto.response.SubscribeToCompetitionResponseDto;
+import com.wora.comptetition.application.dto.request.GeneralResultRequestDto;
+import com.wora.comptetition.application.dto.response.GeneralResultResponseDto;
 import com.wora.comptetition.application.mapper.GeneralResultMapper;
 import com.wora.comptetition.application.service.GeneralResultService;
 import com.wora.comptetition.domain.entity.Competition;
 import com.wora.comptetition.domain.entity.GeneralResult;
 import com.wora.comptetition.domain.repository.CompetitionRepository;
 import com.wora.comptetition.domain.repository.GeneralResultRepository;
+import com.wora.comptetition.domain.valueObject.CompetitionId;
+import com.wora.comptetition.domain.valueObject.GeneralResultId;
 import com.wora.rider.domain.entity.Rider;
 import com.wora.rider.domain.repository.RiderRepository;
+import com.wora.rider.domain.valueObject.RiderId;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -27,7 +32,22 @@ public class DefaultGeneralResultService implements GeneralResultService {
     private final GeneralResultMapper mapper;
 
     @Override
-    public SubscribeToCompetitionResponseDto subscribeToCompetition(SubscribeToCompetitionRequestDto dto) {
+    public List<GeneralResultResponseDto> findAll() {
+        return repository.findAll()
+                .stream().map(mapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
+    public GeneralResultResponseDto findByCompetitionIdAndRiderId(CompetitionId competitionId, RiderId riderId) {
+        final GeneralResultId generalResultId = new GeneralResultId(riderId, competitionId);
+        return repository.findById(generalResultId)
+                .map(mapper::toResponseDto)
+                .orElseThrow(() -> new EntityNotFoundException("general result", generalResultId));
+    }
+
+    @Override
+    public GeneralResultResponseDto subscribeToCompetition(GeneralResultRequestDto dto) {
         final Rider rider = riderRepository.findById(dto.riderId())
                 .orElseThrow(() -> new EntityNotFoundException("rider", dto.riderId()));
         final Competition competition = competitionRepository.findById(dto.competitionId())
@@ -36,5 +56,13 @@ public class DefaultGeneralResultService implements GeneralResultService {
         GeneralResult generalResult = new GeneralResult(competition, rider);
         GeneralResult savedResult = repository.save(generalResult);
         return mapper.toResponseDto(savedResult);
+    }
+
+    @Override
+    public void delete(CompetitionId competitionId, RiderId riderId) {
+        final GeneralResultId generalResultId = new GeneralResultId(riderId, competitionId);
+        if(!repository.existsById(generalResultId))
+            throw new EntityNotFoundException("general result", generalResultId);
+        repository.deleteById(generalResultId);
     }
 }

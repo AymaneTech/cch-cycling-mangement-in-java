@@ -18,7 +18,6 @@ public class DefaultStageValidatorService implements StageValidatorService {
     private final StageMapper mapper;
 
     @Override
-
     public List<Stage> validateDtoAndGetStages(List<StageRequestDto> dtos) {
         if (dtos.isEmpty())
             return List.of();
