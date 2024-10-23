@@ -18,6 +18,7 @@ public class Main {
     private static final Logger log = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
+
         try (var context = new AnnotationConfigApplicationContext(PersistenceConfig.class)) {
             TeamService bean = context.getBean(TeamService.class);
             TeamResponseDto result = bean.create(new TeamRequestDto("kacm", "country"));

@@ -121,8 +121,8 @@ public class DefaultStageValidatorService implements StageValidatorService {
         List<String> errors = new ArrayList<>();
         stages.stream()
                 .reduce((prev, curr) -> {
-                    if (curr.getDate().isAfter(prev.getDate()))
-                        errors.add("stage " + curr.getStageNumber() + "Should not have date after " + prev.getStageNumber());
+                    if (curr.getDate().isBefore(prev.getDate()))
+                        errors.add("stage " + curr.getStageNumber() + " Should not have date before " + prev.getStageNumber());
 
                     return curr;
                 });
