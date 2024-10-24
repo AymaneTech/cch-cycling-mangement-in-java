@@ -1,6 +1,7 @@
 package com.wora.comptetition.domain.entity;
 
 import com.wora.common.domain.valueObject.Timestamp;
+import com.wora.common.infrastructure.persistence.DurationConverter;
 import com.wora.comptetition.domain.valueObject.StageResultId;
 import com.wora.rider.domain.entity.Rider;
 import jakarta.persistence.*;
@@ -25,6 +26,7 @@ public class StageResult {
     private Integer position;
 
     @NotNull
+    @Convert(converter = DurationConverter.class)
     private Duration duration;
 
     @MapsId("riderId")

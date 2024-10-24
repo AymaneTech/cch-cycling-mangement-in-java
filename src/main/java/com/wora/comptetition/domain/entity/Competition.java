@@ -39,10 +39,12 @@ public class Competition {
     @Column(name = "end_date")
     private LocalDate endDate;
 
+    private boolean closed;
+
     @OneToMany(mappedBy = "competition", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Stage> stages = new ArrayList<>();
 
-    @OneToMany(mappedBy = "competition")
+    @OneToMany(mappedBy = "competition", fetch = FetchType.EAGER)
     private List<GeneralResult> generalResults = new ArrayList<>();
 
     @Embedded

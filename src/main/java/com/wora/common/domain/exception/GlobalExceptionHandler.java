@@ -1,8 +1,6 @@
-package com.wora.common.infrastructure.web;
+package com.wora.common.domain.exception;
 
 import com.wora.common.domain.ErrorResponse;
-import com.wora.common.domain.exception.EntityCreationException;
-import com.wora.common.domain.exception.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
-public class RestAdviceController {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

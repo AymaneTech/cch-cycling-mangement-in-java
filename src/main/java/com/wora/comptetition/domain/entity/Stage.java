@@ -1,7 +1,6 @@
 package com.wora.comptetition.domain.entity;
 
 import com.wora.common.domain.valueObject.Timestamp;
-import com.wora.comptetition.domain.repository.StageRepository;
 import com.wora.comptetition.domain.valueObject.StageId;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
@@ -56,7 +55,7 @@ public class Stage {
     @Embedded
     private Timestamp timestamp;
 
-    public Stage(Integer stageNumber, Double distance, String startLocation, String endLocation, LocalDate date, Competition competition){
+    public Stage(Integer stageNumber, Double distance, String startLocation, String endLocation, LocalDate date, Competition competition) {
         this.stageNumber = stageNumber;
         this.distance = distance;
         this.startLocation = startLocation;
