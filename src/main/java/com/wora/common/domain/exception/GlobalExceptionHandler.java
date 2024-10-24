@@ -1,6 +1,8 @@
 package com.wora.common.domain.exception;
 
 import com.wora.common.domain.ErrorResponse;
+import com.wora.comptetition.domain.exception.CompetitionClosedException;
+import com.wora.comptetition.domain.exception.RiderNotSubscribeCompetitionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -67,6 +69,30 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 request.getDescription(false),
                 Map.of("error", String.join("\n",ex.errors()))
+        );
+    }
+
+    @ExceptionHandler(CompetitionClosedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse competitionClosed(final CompetitionClosedException e, WebRequest request) {
+        return new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                e.getMessage(),
+                request.getDescription(false),
+                Map.of()
+        );
+    }
+
+    @ExceptionHandler(RiderNotSubscribeCompetitionException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse riderNotSubscribeCompetition(RiderNotSubscribeCompetitionException e, WebRequest request) {
+        return new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                e.getMessage(),
+                request.getDescription(false),
+                Map.of()
         );
     }
 }
