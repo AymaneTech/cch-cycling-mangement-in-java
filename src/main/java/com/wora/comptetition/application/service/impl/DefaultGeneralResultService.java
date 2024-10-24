@@ -7,6 +7,7 @@ import com.wora.comptetition.application.mapper.GeneralResultMapper;
 import com.wora.comptetition.application.service.GeneralResultService;
 import com.wora.comptetition.domain.entity.Competition;
 import com.wora.comptetition.domain.entity.GeneralResult;
+import com.wora.comptetition.domain.exception.CompetitionClosedException;
 import com.wora.comptetition.domain.repository.CompetitionRepository;
 import com.wora.comptetition.domain.repository.GeneralResultRepository;
 import com.wora.comptetition.domain.valueObject.CompetitionId;
@@ -52,6 +53,9 @@ public class DefaultGeneralResultService implements GeneralResultService {
                 .orElseThrow(() -> new EntityNotFoundException("rider", dto.riderId()));
         final Competition competition = competitionRepository.findById(new CompetitionId(dto.competitionId()))
                 .orElseThrow(() -> new EntityNotFoundException("competition ", dto.competitionId()));
+
+        if (competition.isClosed())
+            throw new CompetitionClosedException("The competition you are trying to subscribe to is already closed");
 
         GeneralResult generalResult = new GeneralResult(competition, rider);
         GeneralResult savedResult = repository.save(generalResult);
