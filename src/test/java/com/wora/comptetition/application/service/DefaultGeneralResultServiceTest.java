@@ -8,6 +8,7 @@ import com.wora.comptetition.application.mapper.GeneralResultMapper;
 import com.wora.comptetition.application.service.impl.DefaultGeneralResultService;
 import com.wora.comptetition.domain.entity.Competition;
 import com.wora.comptetition.domain.entity.GeneralResult;
+import com.wora.comptetition.domain.exception.CompetitionClosedException;
 import com.wora.comptetition.domain.repository.CompetitionRepository;
 import com.wora.comptetition.domain.repository.GeneralResultRepository;
 import com.wora.comptetition.domain.valueObject.CompetitionId;
@@ -45,10 +46,8 @@ class DefaultGeneralResultServiceTest {
     private CompetitionRepository competitionRepository;
     @Mock
     private GeneralResultMapper mapper;
-
     private GeneralResultService sut;
     private GeneralResultRequestDto dto;
-
 
     @BeforeEach
     void setup() {
@@ -94,4 +93,16 @@ class DefaultGeneralResultServiceTest {
         assertEquals(expected.getRider().getName(), actual.rider().name());
     }
 
+    @Test
+    void subscribeToCompetition_ShouldThrowCompetitionClosedException_WhenGivenClosedCompetition() {
+        Rider rider = new Rider(new RiderId(dto.riderId()), new Name("abdelhak", "azrour"), "marrakech", LocalDate.of(2004, 10, 27), null);
+        Competition competition = new Competition(new CompetitionId(dto.competitionId()), "maroc global", LocalDate.now(), LocalDate.now().plusMonths(1))
+                .setClosed(true);
+        GeneralResult expected = new GeneralResult(competition, rider);
+
+        when(riderRepository.findById(any(RiderId.class))).thenReturn(Optional.of(rider));
+        when(competitionRepository.findById(any(CompetitionId.class))).thenReturn(Optional.of(competition));
+
+        assertThrows(CompetitionClosedException.class, () -> sut.subscribeToCompetition(dto));
+    }
 }
