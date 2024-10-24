@@ -33,8 +33,8 @@ public class GeneralResult {
     private Timestamp timestamp;
 
     public GeneralResult(Competition competition, Rider rider) {
+        this.id = new GeneralResultId(rider.getId(), competition.getId());
         this.competition = competition;
         this.rider = rider;
-        this.id = new GeneralResultId(rider.getId(), competition.getId());
     }
 }

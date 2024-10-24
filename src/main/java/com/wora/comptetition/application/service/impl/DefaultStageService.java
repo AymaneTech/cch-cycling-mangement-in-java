@@ -10,6 +10,7 @@ import com.wora.comptetition.application.service.StageService;
 import com.wora.comptetition.application.service.StageValidatorService;
 import com.wora.comptetition.domain.entity.Competition;
 import com.wora.comptetition.domain.entity.Stage;
+import com.wora.comptetition.domain.exception.CompetitionClosedException;
 import com.wora.comptetition.domain.repository.CompetitionRepository;
 import com.wora.comptetition.domain.repository.StageRepository;
 import com.wora.comptetition.domain.valueObject.CompetitionId;
@@ -56,6 +57,9 @@ public class DefaultStageService implements StageService {
     public StageResponseDto create(StageRequestDto dto) {
         final Competition competition = competitionRepository.findById(new CompetitionId(dto.competitionId()))
                 .orElseThrow(() -> new EntityNotFoundException("competition", dto.competitionId()));
+
+        if(competition.isClosed())
+            throw new CompetitionClosedException("The competition you are trying to subscribe to is already closed");
 
         Stage mappedStage = mapToEntity(dto, competition);
         competition.getStages().add(mappedStage);
