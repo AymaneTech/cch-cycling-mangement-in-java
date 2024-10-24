@@ -16,6 +16,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -46,10 +47,10 @@ public class Rider {
     private Team team;
 
     @OneToMany(mappedBy = "rider")
-    private List<StageResult> stageResults;
+    private List<StageResult> stageResults = new ArrayList<>();
 
     @OneToMany(mappedBy = "rider")
-    private List<GeneralResult> generalResults;
+    private List<GeneralResult> generalResults = new ArrayList<>();
 
     @Embedded
     private Timestamp timestamp;
