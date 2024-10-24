@@ -5,8 +5,10 @@ import com.wora.comptetition.application.dto.request.StageResultRequestDto;
 import com.wora.comptetition.application.dto.response.StageResultResponseDto;
 import com.wora.comptetition.application.mapper.StageResultMapper;
 import com.wora.comptetition.application.service.StageResultService;
+import com.wora.comptetition.domain.entity.GeneralResult;
 import com.wora.comptetition.domain.entity.Stage;
 import com.wora.comptetition.domain.entity.StageResult;
+import com.wora.comptetition.domain.exception.RiderNotSubscribeCompetitionException;
 import com.wora.comptetition.domain.repository.StageRepository;
 import com.wora.comptetition.domain.repository.StageResultRepository;
 import com.wora.comptetition.domain.valueObject.StageId;
@@ -53,6 +55,9 @@ public class DefaultStageResultService implements StageResultService {
         final Stage stage = stageRepository.findById(new StageId(dto.stageId()))
                 .orElseThrow(() -> new EntityNotFoundException(dto.stageId()));
 
+        if (!isRiderJoinedCompetition(rider, stage))
+            throw new RiderNotSubscribeCompetitionException("This rider not subscribe this competition");
+
         final StageResult savedResult = stageResultRepository.save(new StageResult(rider, stage, dto.duration()));
         return mapper.toResponseDto(savedResult);
     }
@@ -65,4 +70,11 @@ public class DefaultStageResultService implements StageResultService {
 
         stageResultRepository.deleteById(stageResultId);
     }
+
+    private boolean isRiderJoinedCompetition(Rider rider, Stage stage) {
+        return rider.getGeneralResults().stream()
+                .map(GeneralResult::getCompetition)
+                .anyMatch(competition -> stage.getCompetition().getId().equals(competition.getId()));
+    }
+
 }
