@@ -63,8 +63,10 @@ public class DefaultStageService implements StageService {
 
         Stage mappedStage = mapToEntity(dto, competition);
         competition.getStages().add(mappedStage);
+
         validateStagesBetweenCompetitionStartAndEnd(competition.getStages(), competition);
         stageValidatorService.validateAndGetStages(competition.getStages());
+
         Stage savedStage = repository.save(mappedStage);
         return mapper.toResponseDto(savedStage);
     }

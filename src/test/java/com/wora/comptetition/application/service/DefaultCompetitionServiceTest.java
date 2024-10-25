@@ -1,7 +1,9 @@
 package com.wora.comptetition.application.service;
 
+import com.wora.common.domain.exception.EntityCreationException;
 import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.comptetition.application.dto.request.CompetitionRequestDto;
+import com.wora.comptetition.application.dto.request.StageRequestDto;
 import com.wora.comptetition.application.dto.response.CompetitionResponseDto;
 import com.wora.comptetition.application.mapper.CompetitionMapper;
 import com.wora.comptetition.application.service.impl.DefaultCompetitionService;
@@ -36,7 +38,6 @@ class DefaultCompetitionServiceTest {
     @Mock
     private CompetitionMapper mapper;
 
-    //    @InjectMocks
     private CompetitionService sut;
 
     @BeforeEach
@@ -49,7 +50,7 @@ class DefaultCompetitionServiceTest {
     class FindAllTests {
         @DisplayName("Should return empty list when no competition exists")
         @Test
-        void findAll_ShouldReturnEmtpyList_WhenGivenNoCompetitionExists() {
+        void findAll_ShouldReturnEmptyList_WhenGivenNoCompetitionExists() {
 
             when(repository.findAll()).thenReturn(List.of());
 
@@ -120,7 +121,8 @@ class DefaultCompetitionServiceTest {
         @DisplayName("Should return create competition when given valid competition request")
         @Test
         void create_ShouldReturnCreatedCompetition_WhenGivenValidCompetitionRequest() {
-            CompetitionRequestDto expected = new CompetitionRequestDto("maroc ", LocalDate.now().plusMonths(2), LocalDate.now().plusMonths(3), List.of());
+            StageRequestDto stageRequestDto = new StageRequestDto(1, 39.2, "marrakech", "safi", LocalDate.now().plusDays(3), null);
+            CompetitionRequestDto expected = new CompetitionRequestDto("maroc ", LocalDate.now().plusDays(2), LocalDate.now().plusDays(21), List.of(stageRequestDto));
             Competition competition = new Competition(new CompetitionId(), expected.name(), expected.startDate(), expected.endDate());
 
             when(mapper.toEntity(any(CompetitionRequestDto.class))).thenReturn(competition);
@@ -133,6 +135,17 @@ class DefaultCompetitionServiceTest {
             assertEquals(expected.name(), actual.name());
             assertEquals(expected.startDate(), actual.startDate());
             assertTrue(actual.endDate().isAfter(actual.startDate()));
+        }
+
+        @Test
+        void create_ShouldThrowEntityCreationFailedException() {
+            StageRequestDto stageRequestDto = new StageRequestDto(1, 39.2, "marrakech", "safi", LocalDate.now().minusWeeks(3), null);
+            CompetitionRequestDto expected = new CompetitionRequestDto("maroc ", LocalDate.now().plusMonths(2), LocalDate.now().plusMonths(3), List.of(stageRequestDto));
+            Competition competition = new Competition(new CompetitionId(), expected.name(), expected.startDate(), expected.endDate());
+
+            when(mapper.toEntity(any(CompetitionRequestDto.class))).thenReturn(competition);
+
+            assertThrows(EntityCreationException.class, () -> sut.create(expected));
         }
     }
 
