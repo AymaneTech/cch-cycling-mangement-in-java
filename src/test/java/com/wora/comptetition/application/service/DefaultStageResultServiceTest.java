@@ -108,7 +108,7 @@ class DefaultStageResultServiceTest {
         when(repository.save(any(StageResult.class))).thenReturn(expected);
         when(mapper.toResponseDto(any(StageResult.class)))
                 .thenReturn(new StageResultResponseDto(
-                                new StageResponseDto(stage.getId().value(), stage.getStageNumber(), stage.getDistance(), stage.getStartLocation(), stage.getEndLocation(), stage.getDate(), null),
+                                new StageResponseDto(stage.getId().value(), stage.getStageNumber(), stage.getDistance(), stage.getStartLocation(), stage.getEndLocation(), stage.getDate(), stage.isClosed(), null),
                                 new RiderResponseDto(rider.getId().value(), rider.getName(), rider.getNationality(), rider.getDateOfBirth(), null),
                                 expected.getDuration(), 1
                         )

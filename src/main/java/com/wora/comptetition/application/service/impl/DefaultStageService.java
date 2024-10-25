@@ -88,9 +88,18 @@ public class DefaultStageService implements StageService {
     @Override
     public void delete(StageId id) {
         if (!repository.existsById(id))
-            throw new EntityNotFoundException(id);
+            throw new EntityNotFoundException("stage ", id);
 
         repository.deleteById(id);
+    }
+
+    @Override
+    public StageResponseDto toggleClosed(StageId id) {
+        final Stage stage = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("stage", id));
+
+        stage.setClosed(! stage.isClosed());
+        return mapper.toResponseDto(stage);
     }
 
     private Stage mapToEntity(StageRequestDto dto, Competition competition) {

@@ -81,9 +81,9 @@ class DefaultStageServiceTest {
                     .thenAnswer(invocation -> {
                         Stage stage = invocation.getArgument(0);
                         return new StageResponseDto(stage.getId().value(), stage.getStageNumber(), stage.getDistance(),
-                                stage.getStartLocation(), stage.getEndLocation(), stage.getDate(),
+                                stage.getStartLocation(), stage.getEndLocation(), stage.getDate(), stage.isClosed(),
                                 new EmbeddableCompetition(competition.getId().value(), competition.getName(),
-                                        competition.getStartDate(), competition.getEndDate()));
+                                        competition.getStartDate(), competition.getEndDate(), competition.isClosed()));
                     });
 
             List<StageResponseDto> actual = sut.findAll();
@@ -109,9 +109,9 @@ class DefaultStageServiceTest {
                     .thenAnswer(invocation -> {
                         Stage stage = invocation.getArgument(0);
                         return new StageResponseDto(stage.getId().value(), stage.getStageNumber(), stage.getDistance(),
-                                stage.getStartLocation(), stage.getEndLocation(), stage.getDate(),
+                                stage.getStartLocation(), stage.getEndLocation(), stage.getDate(), stage.isClosed(),
                                 new EmbeddableCompetition(competition.getId().value(), competition.getName(),
-                                        competition.getStartDate(), competition.getEndDate()));
+                                        competition.getStartDate(), competition.getEndDate(), competition.isClosed()));
                     });
 
             List<StageResponseDto> actual = sut.findAllByCompetitionId(competition.getId());
@@ -138,8 +138,8 @@ class DefaultStageServiceTest {
             when(repository.findById(stage.getId())).thenReturn(Optional.of(stage));
             when(mapper.toResponseDto(any(Stage.class)))
                     .thenReturn(new StageResponseDto(stage.getId().value(), stage.getStageNumber(), stage.getDistance(), stage.getStartLocation(),
-                            stage.getEndLocation(), stage.getDate(), new EmbeddableCompetition(competition.getId().value(), competition.getName(),
-                            competition.getStartDate(), competition.getEndDate())));
+                            stage.getEndLocation(), stage.getDate(), competition.isClosed(), new EmbeddableCompetition(competition.getId().value(), competition.getName(),
+                            competition.getStartDate(), competition.getEndDate(), competition.isClosed())));
 
             StageResponseDto actual = sut.findById(stage.getId());
 
@@ -175,8 +175,8 @@ class DefaultStageServiceTest {
                     .thenAnswer(invocation -> {
                         Stage s = invocation.getArgument(0);
                         return new StageResponseDto(s.getId().value(), s.getStageNumber(), s.getDistance(), s.getStartLocation(), s.getEndLocation(),
-                                s.getDate(), new EmbeddableCompetition(competition.getId().value(), competition.getName(),
-                                competition.getStartDate(), competition.getEndDate()));
+                                s.getDate(), s.isClosed(), new EmbeddableCompetition(competition.getId().value(), competition.getName(),
+                                competition.getStartDate(), competition.getEndDate(), competition.isClosed()));
                     });
 
             StageResponseDto actual = sut.create(dto);
@@ -206,8 +206,8 @@ class DefaultStageServiceTest {
             when(competitionRepository.findById(any(CompetitionId.class))).thenReturn(Optional.of(competition));
             when(mapper.toResponseDto(any(Stage.class)))
                     .thenReturn(new StageResponseDto(updatedStage.getId().value(), updatedStage.getStageNumber(), updatedStage.getDistance(),
-                            updatedStage.getStartLocation(), updatedStage.getEndLocation(), updatedStage.getDate(),
-                            new EmbeddableCompetition(competition.getId().value(), competition.getName(), competition.getStartDate(), competition.getEndDate())));
+                            updatedStage.getStartLocation(), updatedStage.getEndLocation(), updatedStage.getDate(), updatedStage.isClosed(),
+                            new EmbeddableCompetition(competition.getId().value(), competition.getName(), competition.getStartDate(), competition.getEndDate(), competition.isClosed())));
 
             StageResponseDto actual = sut.update(stage.getId(), dto);
 

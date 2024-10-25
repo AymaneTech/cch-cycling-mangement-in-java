@@ -14,6 +14,7 @@ public record StageResponseDto(@NotNull UUID id,
                                @NotBlank String startLocation,
                                @NotBlank String endLocation,
                                @NotNull LocalDate date,
+                               @NotNull Boolean closed,
                                @NotNull EmbeddableCompetition competition
 ) {
 }

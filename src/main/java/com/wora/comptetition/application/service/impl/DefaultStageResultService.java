@@ -9,6 +9,7 @@ import com.wora.comptetition.domain.entity.GeneralResult;
 import com.wora.comptetition.domain.entity.Stage;
 import com.wora.comptetition.domain.entity.StageResult;
 import com.wora.comptetition.domain.exception.RiderNotSubscribeCompetitionException;
+import com.wora.comptetition.domain.exception.StageClosedException;
 import com.wora.comptetition.domain.repository.StageRepository;
 import com.wora.comptetition.domain.repository.StageResultRepository;
 import com.wora.comptetition.domain.valueObject.StageId;
@@ -57,6 +58,8 @@ public class DefaultStageResultService implements StageResultService {
 
         if (!isRiderJoinedCompetition(rider, stage))
             throw new RiderNotSubscribeCompetitionException("This rider not subscribe this competition");
+        if (stage.isClosed())
+            throw new StageClosedException("the stage you are trying to add to it is closed, open it then do whatever");
 
         final StageResult savedResult = stageResultRepository.save(new StageResult(rider, stage, dto.duration()));
         return mapper.toResponseDto(savedResult);
@@ -67,7 +70,8 @@ public class DefaultStageResultService implements StageResultService {
         StageResultId stageResultId = new StageResultId(stageId, riderId);
         if (!stageResultRepository.existsById(stageResultId))
             throw new EntityNotFoundException(stageResultId);
-
+        if (!stageRepository.isStageClosed(stageId))
+            throw new StageClosedException("the stage you are trying to delete is closed");
         stageResultRepository.deleteById(stageResultId);
     }
 
@@ -76,5 +80,4 @@ public class DefaultStageResultService implements StageResultService {
                 .map(GeneralResult::getCompetition)
                 .anyMatch(competition -> stage.getCompetition().getId().equals(competition.getId()));
     }
-
 }

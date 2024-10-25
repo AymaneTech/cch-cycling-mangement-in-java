@@ -27,7 +27,7 @@ public class StageResultController {
     }
 
     @GetMapping("/{stageId}/{riderId}")
-    public ResponseEntity<StageResultResponseDto> findByStageIdAndRiderId(@PathVariable UUID stageId, @PathVariable UUID riderId){
+    public ResponseEntity<StageResultResponseDto> findByStageIdAndRiderId(@PathVariable UUID stageId, @PathVariable UUID riderId) {
         StageResultResponseDto result = service.findByStageIdAndRiderId(new StageId(stageId), new RiderId(riderId));
         return ResponseEntity.ok(result);
     }
@@ -38,9 +38,8 @@ public class StageResultController {
         return ResponseEntity.ok(result);
     }
 
-
     @DeleteMapping("/{stageId}/{riderId}")
-    public ResponseEntity<Void> deleteByStageIdAndRiderId(@PathVariable UUID stageId, @PathVariable UUID riderId){
+    public ResponseEntity<Void> deleteByStageIdAndRiderId(@PathVariable UUID stageId, @PathVariable UUID riderId) {
         service.delete(new StageId(stageId), new RiderId(riderId));
         return ResponseEntity.noContent().build();
     }

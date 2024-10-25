@@ -9,6 +9,7 @@ import java.util.UUID;
 public record EmbeddableCompetition(@NotNull UUID id,
                                     @NotBlank String name,
                                     @NotNull LocalDate startDate,
-                                    @NotNull LocalDate endDate
+                                    @NotNull LocalDate endDate,
+                                    @NotNull Boolean closed
 ) {
 }

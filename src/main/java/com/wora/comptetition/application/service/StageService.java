@@ -11,4 +11,6 @@ import java.util.List;
 
 public interface StageService extends CrudService<Stage, StageId, StageRequestDto, StageResponseDto> {
     List<StageResponseDto> findAllByCompetitionId(CompetitionId competitionId);
+
+    StageResponseDto toggleClosed(StageId id);
 }

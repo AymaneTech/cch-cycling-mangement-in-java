@@ -42,6 +42,9 @@ public class Stage {
     @NotBlank
     private String endLocation;
 
+    @NotNull
+    private boolean closed = false;
+
     @Future
     @NotNull
     private LocalDate date;

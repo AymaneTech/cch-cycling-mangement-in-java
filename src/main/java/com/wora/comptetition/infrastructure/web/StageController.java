@@ -56,4 +56,10 @@ public class StageController {
         service.delete(new StageId(id));
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/toggle-status/{id}")
+    public ResponseEntity<StageResponseDto> toggleClosed(@PathVariable UUID id) {
+        StageResponseDto stage = service.toggleClosed(new StageId(id));
+        return ResponseEntity.ok(stage);
+    }
 }
