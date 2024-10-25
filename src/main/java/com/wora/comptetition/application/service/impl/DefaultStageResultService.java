@@ -72,7 +72,7 @@ public class DefaultStageResultService implements StageResultService {
             throw new EntityNotFoundException(stageResultId);
         if (!stageRepository.isStageClosed(stageId))
             throw new StageClosedException("the stage you are trying to delete is closed");
-        stageResultRepository.deleteById(stageResultId);
+        stageResultRepository.deleteByStageAndRiderIds(stageId, riderId);
     }
 
     private boolean isRiderJoinedCompetition(Rider rider, Stage stage) {

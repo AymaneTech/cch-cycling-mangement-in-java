@@ -67,6 +67,6 @@ public class DefaultGeneralResultService implements GeneralResultService {
         final GeneralResultId generalResultId = new GeneralResultId(riderId, competitionId);
         if(!repository.existsById(generalResultId))
             throw new EntityNotFoundException("general result", generalResultId);
-        repository.deleteById(generalResultId);
+        repository.deleteByCompetitionAndRiderIds(competitionId, riderId);
     }
 }
