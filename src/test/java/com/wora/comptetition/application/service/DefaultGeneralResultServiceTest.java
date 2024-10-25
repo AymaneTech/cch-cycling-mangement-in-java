@@ -198,7 +198,7 @@ class DefaultGeneralResultServiceTest {
             when(repository.existsById(any(GeneralResultId.class))).thenReturn(true);
             sut.delete(new CompetitionId(), new RiderId());
 
-            verify(repository).deleteById(any(GeneralResultId.class));
+            verify(repository).deleteByCompetitionAndRiderIds(any(CompetitionId.class), any(RiderId.class));
         }
     }
 }

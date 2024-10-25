@@ -1,5 +1,6 @@
 package com.wora.comptetition.application.service;
 
+import com.wora.common.domain.exception.EntityCreationException;
 import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.comptetition.application.dto.embeddable.EmbeddableCompetition;
 import com.wora.comptetition.application.dto.request.StageRequestDto;
@@ -8,6 +9,7 @@ import com.wora.comptetition.application.mapper.StageMapper;
 import com.wora.comptetition.application.service.impl.DefaultStageService;
 import com.wora.comptetition.domain.entity.Competition;
 import com.wora.comptetition.domain.entity.Stage;
+import com.wora.comptetition.domain.exception.CompetitionClosedException;
 import com.wora.comptetition.domain.repository.CompetitionRepository;
 import com.wora.comptetition.domain.repository.StageRepository;
 import com.wora.comptetition.domain.valueObject.CompetitionId;
@@ -160,7 +162,6 @@ class DefaultStageServiceTest {
 
         @Test
         void create_ShouldThrowEntityNotFoundException_WhenGivenNotExistingCompetitionId() {
-
             when(competitionRepository.findById(any(CompetitionId.class))).thenReturn(Optional.empty());
 
             assertThrows(EntityNotFoundException.class, () -> sut.create(dto));
@@ -183,6 +184,23 @@ class DefaultStageServiceTest {
 
             assertNotNull(stage);
             assertEquals(stage.getStageNumber(), actual.stageNumber());
+        }
+
+        @Test
+        void create_ShouldThrowCompetitionIsClosed_WhenGivenClosedCompetition() {
+            competition.setClosed(true);
+            when(competitionRepository.findById(any(CompetitionId.class))).thenReturn(Optional.of(competition));
+
+            assertThrows(CompetitionClosedException.class, () -> sut.create(dto));
+        }
+
+        @Test
+        void create_ShouldThrowEntityCreationException_WhenGivenStageDateOutOfCompetitionDate() {
+            stage.setDate(LocalDate.now().plusYears(2));
+            when(competitionRepository.findById(any(CompetitionId.class))).thenReturn(Optional.of(competition));
+            when(mapper.toEntity(any(StageRequestDto.class))).thenReturn(stage);
+
+            assertThrows(EntityCreationException.class, () -> sut.create(dto));
         }
     }
 
@@ -259,6 +277,32 @@ class DefaultStageServiceTest {
             verify(repository).existsById(any(StageId.class));
             verify(repository).deleteById(any(StageId.class));
 
+        }
+    }
+
+    @Nested
+    class ToggleClosedTests {
+        @Test
+        void toggleClosed_ShouldThrowEntityNotFoundException_WhenGivenNotExistingStage() {
+            when(repository.findById(any(StageId.class))).thenReturn(Optional.empty());
+
+            assertThrows(EntityNotFoundException.class, () -> sut.toggleClosed(new StageId()));
+        }
+
+        @Test
+        void toggleClosed_ShouldToggleClosedStatus_WhenGivenExistingStage() {
+            when(repository.findById(any(StageId.class))).thenReturn(Optional.of(stage));
+            when(mapper.toResponseDto(any(Stage.class)))
+                    .thenAnswer(invocation -> {
+                        Stage s = invocation.getArgument(0);
+                        return new StageResponseDto(s.getId().value(), s.getStageNumber(), s.getDistance(), s.getStartLocation(), s.getEndLocation(),
+                                s.getDate(), s.isClosed(), new EmbeddableCompetition(competition.getId().value(), competition.getName(),
+                                competition.getStartDate(), competition.getEndDate(), competition.isClosed()));
+                    });
+
+            StageResponseDto actual = sut.toggleClosed(stage.getId());
+
+            assertEquals(stage.isClosed(), actual.closed());
         }
     }
 }
