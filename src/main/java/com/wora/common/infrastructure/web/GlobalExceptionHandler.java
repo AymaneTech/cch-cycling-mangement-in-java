@@ -1,8 +1,11 @@
-package com.wora.common.domain.exception;
+package com.wora.common.infrastructure.web;
 
 import com.wora.common.domain.ErrorResponse;
+import com.wora.common.domain.exception.EntityCreationException;
+import com.wora.common.domain.exception.EntityNotFoundException;
 import com.wora.comptetition.domain.exception.CompetitionClosedException;
 import com.wora.comptetition.domain.exception.RiderNotSubscribeCompetitionException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -34,6 +37,18 @@ public class GlobalExceptionHandler {
                 "Validation failed",
                 request.getDescription(false),
                 errors);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse dataIntegrityViolation(DataIntegrityViolationException e, WebRequest request) {
+        return new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                "Data Integrity Violation",
+                request.getDescription(false),
+                Map.of("error", e.getMostSpecificCause().getMessage())
+        );
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -68,7 +83,19 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 ex.getMessage(),
                 request.getDescription(false),
-                Map.of("error", String.join("\n",ex.errors()))
+                Map.of("error", String.join("\n", ex.errors()))
+        );
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse runtime(RuntimeException e, WebRequest request) {
+        return new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                "uncatched exception from aymane",
+                request.getDescription(false),
+                Map.of("error", e.getMessage())
         );
     }
 

@@ -47,9 +47,9 @@ public class PersistenceConfig {
 
         Properties jpaProperties = new Properties();
         jpaProperties.put("hibernate.hbm2ddl.auto", properties.hibernateDdlAuto());
-        factoryBean.setJpaProperties(jpaProperties);
         jpaProperties.put("hibernate.show_sql", properties.hibernateShowSql());
         jpaProperties.put("hibernate.format_sql", properties.hibernateFormatSql());
+        factoryBean.setJpaProperties(jpaProperties);
 
         return factoryBean;
     }

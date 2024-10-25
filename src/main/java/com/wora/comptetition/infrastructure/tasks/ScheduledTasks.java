@@ -10,7 +10,6 @@ public class ScheduledTasks {
     private final CompetitionRepository repository;
 
     public ScheduledTasks(CompetitionRepository repository) {
-        System.out.println("initialize the schedule");
         this.repository = repository;
     }
 
@@ -18,7 +17,7 @@ public class ScheduledTasks {
     @Scheduled(cron = "0 0 * * * *")
     @Transactional
     public void checkIfCompetitionShouldBeClosed() {
+        System.out.println("Schedule ran ");
         int affectedCompetitions = repository.closeExpiredCompetitions();
-        System.out.println(affectedCompetitions + " competitions closed");
     }
 }
