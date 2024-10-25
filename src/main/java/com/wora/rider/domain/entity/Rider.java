@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "riders")
+@Table(name = "riders", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"first_name", "last_name"})
+})
 
 @Getter
 @Setter
