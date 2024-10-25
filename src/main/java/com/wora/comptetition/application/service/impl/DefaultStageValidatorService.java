@@ -50,7 +50,7 @@ public class DefaultStageValidatorService implements StageValidatorService {
 
         if (!errors.isEmpty())
             throw new EntityCreationException(
-                    "Failed to save the competition because of stages errors, sir tatjib data mgada o n3yto lik",
+                    "Failed to save the competition because of stages errors, sir tatjib data mgada o n3yto lik, ============ "+ errors,
                     errors
             );
 
