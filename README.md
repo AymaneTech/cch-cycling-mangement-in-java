@@ -48,7 +48,7 @@ CCH (Cyclo Club Horizon) is a REST API designed to manage cycling time trial com
 ### Technical Stack
 - **Framework**: Spring Framework (IoC, MVC, Data JPA)
 - **ORM**: Hibernate
-- **Database**: [Your Database Choice]
+- **Database**: Postgresql 
 - **Build Tool**: Maven
 - **Documentation**: Swagger/OpenAPI
 
@@ -127,6 +127,7 @@ DELETE /api/v1/stage-results/{stageId}/{cyclistId}
 - JUnit for unit testing
 - Mockito for mocking dependencies
 - TDD approach for core functionalities
+- Jacoco for code coverage reports
 
 ## 🚀 Getting Started
 
