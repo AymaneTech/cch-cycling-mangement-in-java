@@ -29,7 +29,7 @@ public class GeneralResultController {
     }
 
     @GetMapping("/{competitionId}/{riderId}")
-    public ResponseEntity<GeneralResultResponseDto> findByCompetitionIdAndRiderId(@PathVariable UUID competitionId, @PathVariable UUID riderId){
+    public ResponseEntity<GeneralResultResponseDto> findByCompetitionIdAndRiderId(@PathVariable UUID competitionId, @PathVariable UUID riderId) {
         GeneralResultResponseDto result = service.findByCompetitionIdAndRiderId(new CompetitionId(competitionId), new RiderId(riderId));
         return ResponseEntity.ok(result);
     }
@@ -41,7 +41,7 @@ public class GeneralResultController {
     }
 
     @DeleteMapping("/{competitionId}/{riderId}")
-    public ResponseEntity<Void> deleteByCompetitionIdAndRiderId(@PathVariable UUID competitionId, @PathVariable UUID riderId){
+    public ResponseEntity<Void> deleteByCompetitionIdAndRiderId(@PathVariable UUID competitionId, @PathVariable UUID riderId) {
         service.delete(new CompetitionId(competitionId), new RiderId(riderId));
         return ResponseEntity.noContent().build();
     }

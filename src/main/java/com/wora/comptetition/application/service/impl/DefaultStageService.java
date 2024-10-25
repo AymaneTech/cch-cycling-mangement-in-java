@@ -80,6 +80,7 @@ public class DefaultStageService implements StageService {
                 .setDistance(dto.distance())
                 .setStartLocation(dto.startLocation())
                 .setEndLocation(dto.endLocation())
+                .setDate(dto.date())
                 .setCompetition(competition);
         return mapper.toResponseDto(stage);
     }
