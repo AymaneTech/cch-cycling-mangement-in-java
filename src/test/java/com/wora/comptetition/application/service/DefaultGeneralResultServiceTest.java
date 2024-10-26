@@ -84,7 +84,7 @@ class DefaultGeneralResultServiceTest {
                 Rider r = gr.getRider();
 
                 return new GeneralResultResponseDto(
-                        new CompetitionResponseDto(c.getId().value(), c.getName(), c.getStartDate(), c.getEndDate(), List.of()),
+                        new CompetitionResponseDto(c.getId().value(), c.getName(), c.getStartDate(), c.getEndDate(), List.of(), List.of()),
                         new RiderResponseDto(r.getId().value(), r.getName(), r.getNationality(), r.getDateOfBirth(), null)
                 );
             });
@@ -126,7 +126,7 @@ class DefaultGeneralResultServiceTest {
             when(repository.save(any(GeneralResult.class))).thenReturn(expected);
             when(mapper.toResponseDto(any(GeneralResult.class)))
                     .thenReturn(new GeneralResultResponseDto(
-                            new CompetitionResponseDto(competition.getId().value(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of()),
+                            new CompetitionResponseDto(competition.getId().value(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of(), List.of()),
                             new RiderResponseDto(rider.getId().value(), rider.getName(), rider.getNationality(), rider.getDateOfBirth(), null)
                     ));
 
@@ -172,7 +172,7 @@ class DefaultGeneralResultServiceTest {
                 Rider r = gr.getRider();
 
                 return new GeneralResultResponseDto(
-                        new CompetitionResponseDto(c.getId().value(), c.getName(), c.getStartDate(), c.getEndDate(), List.of()),
+                        new CompetitionResponseDto(c.getId().value(), c.getName(), c.getStartDate(), c.getEndDate(), List.of(), List.of()),
                         new RiderResponseDto(r.getId().value(), r.getName(), r.getNationality(), r.getDateOfBirth(), null)
                 );
             });

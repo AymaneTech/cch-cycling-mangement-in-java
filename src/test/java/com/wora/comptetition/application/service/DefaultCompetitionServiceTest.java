@@ -71,7 +71,7 @@ class DefaultCompetitionServiceTest {
 
             doAnswer(invocation -> {
                 Competition competition = invocation.getArgument(0);
-                return new CompetitionResponseDto(new CompetitionId().value(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of());
+                return new CompetitionResponseDto(new CompetitionId().value(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of(), List.of());
             })
                     .when(mapper).toResponseDto(any(Competition.class));
             when(repository.findAll()).thenReturn(expected);
@@ -104,7 +104,7 @@ class DefaultCompetitionServiceTest {
             when(mapper.toResponseDto(any(Competition.class)))
                     .thenAnswer(invocation -> {
                         Competition competition = invocation.getArgument(0);
-                        return new CompetitionResponseDto(competition.getId().value(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of());
+                        return new CompetitionResponseDto(competition.getId().value(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of(), List.of());
                     });
 
             CompetitionResponseDto actual = sut.findById(expected.getId());
@@ -128,7 +128,7 @@ class DefaultCompetitionServiceTest {
             when(mapper.toEntity(any(CompetitionRequestDto.class))).thenReturn(competition);
             when(repository.save(any(Competition.class))).thenReturn(competition);
             when(mapper.toResponseDto(any(Competition.class)))
-                    .thenReturn(new CompetitionResponseDto(competition.getId().value(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of()));
+                    .thenReturn(new CompetitionResponseDto(competition.getId().value(), competition.getName(), competition.getStartDate(), competition.getEndDate(), List.of(), List.of()));
 
             CompetitionResponseDto actual = sut.create(expected);
 
@@ -170,7 +170,7 @@ class DefaultCompetitionServiceTest {
 
             when(repository.findById(any(CompetitionId.class))).thenReturn(Optional.of(competition));
             when(mapper.toResponseDto(any(Competition.class)))
-                    .thenReturn(new CompetitionResponseDto(competition.getId().value(), dto.name(), competition.getStartDate(), competition.getEndDate(), List.of()));
+                    .thenReturn(new CompetitionResponseDto(competition.getId().value(), dto.name(), competition.getStartDate(), competition.getEndDate(), List.of(), List.of()));
 
             CompetitionResponseDto actual = sut.update(competition.getId(), dto);
 
